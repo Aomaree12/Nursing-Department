@@ -200,7 +200,7 @@
         .fc-event-time { display: none !important; }
         .fc .fc-daygrid-more-link { font-size: 0.66rem; font-weight: 700; color: #047857; }
 
-        /* Compact Mobile DataTable Styling */
+        /* Compact Mobile DataTable */
         #meetingsDataTable { width: 100% !important; table-layout: fixed; }
         #meetingsDataTable thead th {
             font-size: 0.85rem !important;
@@ -479,9 +479,9 @@
         <button class="nav-item-btn" id="nav-tab-profile" onclick="switchTab('tab-profile')"><span class="nav-ico">👩‍⚕️</span><span>โปรไฟล์</span></button>
     </div>
 
-    <!-- MODAL 1: สร้างคำสั่งงาน / นัดประชุม -->
+    <!-- MODAL 1: สร้างคำสั่งงาน / นัดประชุม (เรียงลำดับช่อง + โชว์รูปโปรไฟล์คนต้องส่งตาม OPD/IPD ทันที) -->
     <div class="modal fade" id="createTaskModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-emerald-600 text-white rounded-t-[26px]">
                     <h5 class="modal-title fw-bold">✨ สั่งงานใหม่ / นัดประชุม</h5>
@@ -495,18 +495,34 @@
                             <option value="ประชุม">📅 นัดหมายประชุม / วาระการประชุม</option>
                         </select>
                     </div>
+
                     <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">หัวข้องาน / วาระการประชุม *</label>
-                        <input type="text" id="taskTitle" class="form-control rounded-4" placeholder="ระบุหัวข้อ...">
+                        <label class="form-label fw-bold mb-1">📝 เรื่อง (หัวข้องาน / วาระการประชุม) *</label>
+                        <input type="text" id="taskTitle" class="form-control rounded-4" placeholder="ระบุเรื่อง...">
                     </div>
+
                     <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">รายละเอียด / วาระ / สถานที่</label>
-                        <textarea id="taskDetail" class="form-control rounded-4" rows="3" placeholder="ระบุรายละเอียด..."></textarea>
+                        <label class="form-label fw-bold mb-1">📄 รายละเอียด / วาระ / สถานที่</label>
+                        <textarea id="taskDetail" class="form-control rounded-4" rows="3" placeholder="ระบุรายละเอียด / วาระ / สถานที่..."></textarea>
                     </div>
+
+                    <!-- เอกสารประกอบ อยู่ต่อท้าย รายละเอียด / วาระ / สถานที่ -->
+                    <div class="mb-2">
+                        <label class="form-label fw-bold mb-1">📎 เอกสารประกอบ (PDF / Word / รูปภาพ)</label>
+                        <input type="file" id="taskAttachmentFile" class="form-control rounded-4">
+                    </div>
+
+                    <!-- วัน-เวลา กำหนดส่ง อยู่ถัดจากเอกสารประกอบ -->
+                    <div class="mb-2">
+                        <label class="form-label fw-bold mb-1">⏰ วัน-เวลา กำหนดส่ง / ประชุม *</label>
+                        <input type="datetime-local" id="taskDueDate" class="form-control rounded-4">
+                    </div>
+
+                    <!-- หน่วยงานที่รับผิดชอบ + ประเภท (ทั้งหมด / OPD / IPD) -->
                     <div class="row g-2 mb-2">
                         <div class="col-6">
                             <label class="form-label fw-bold mb-1">🏥 หน่วยงานที่รับผิดชอบ</label>
-                            <select id="taskTargetDept" class="form-select rounded-4">
+                            <select id="taskTargetDept" class="form-select rounded-4" onchange="updateTargetUsersPreview()">
                                 <option value="ALL">ทุกหน่วยงาน</option>
                                 <option value="หน่วยไตเทียม">หน่วยไตเทียม</option>
                                 <option value="กลุ่มการพยาบาล">กลุ่มการพยาบาล</option>
@@ -518,29 +534,23 @@
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label fw-bold mb-1">🏷️ แจกงานตามประเภท</label>
-                            <select id="taskTargetCareType" class="form-select rounded-4">
-                                <option value="ALL">ทั้ง OPD และ IPD</option>
-                                <option value="OPD">🩺 เฉพาะ OPD</option>
-                                <option value="IPD">🛏️ เฉพาะ IPD</option>
+                            <label class="form-label fw-bold mb-1">🏷️ ประเภทกลุ่มเป้าหมาย</label>
+                            <select id="taskTargetCareType" class="form-select rounded-4" onchange="updateTargetUsersPreview()">
+                                <option value="ALL">🌟 ทั้งหมด (OPD + IPD)</option>
+                                <option value="OPD">🩺 OPD</option>
+                                <option value="IPD">🛏️ IPD</option>
                             </select>
                         </div>
                     </div>
-                    <div class="row g-2 mb-2">
-                        <div class="col-6">
-                            <label class="form-label fw-bold mb-1">⏰ วัน-เวลา กำหนดส่ง/ประชุม *</label>
-                            <input type="datetime-local" id="taskDueDate" class="form-control rounded-4">
+
+                    <!-- กล่องแสดงรูปโปรไฟล์คนที่ต้องส่งงานอัตโนมัติตามประเภทที่เลือก -->
+                    <div class="bg-emerald-50/90 border border-emerald-200 rounded-4 p-2.5 mb-2">
+                        <div class="fw-bold text-xs text-emerald-800 mb-1.5" id="targetUsersPreviewLabel">
+                            👥 รายชื่อผู้ที่ต้องส่งงานตามประเภทที่เลือก (0 คน):
                         </div>
-                        <div class="col-6">
-                            <label class="form-label fw-bold mb-1">👤 เจาะจงรายบุคคล</label>
-                            <select id="taskAssignee" class="form-select rounded-4">
-                                <option value="ALL_IN_GROUP">-- ทุกคนตามกลุ่มที่เลือก --</option>
-                            </select>
+                        <div id="targetUsersPreviewBox" class="d-flex flex-wrap gap-1.5">
+                            <span class="text-xs text-slate-400">กำลังโหลดรายชื่อ...</span>
                         </div>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">📎 แนบไฟล์คำสั่ง / เอกสารประกอบ</label>
-                        <input type="file" id="taskAttachmentFile" class="form-control rounded-4">
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -678,7 +688,7 @@
             }
         }
 
-        // ปรับ postToGAS ให้รองรับการตอบกลับของ Google Apps Script โดยไม่ติด Error ปลอม
+        // ส่งข้อมูลไป Google Apps Script แบบทนทานต่อ CORS / 302 Redirect
         async function postToGAS(payload) {
             try {
                 const response = await fetch(GAS_WEB_APP_URL, {
@@ -693,8 +703,9 @@
                 } catch (e) {
                     return { status: "success" };
                 }
-            } catch (networkErr) {
-                // กรณี GAS บันทึกเสร็จแล้วแต่ติด CORS ตอน Redirect กลับ
+            } catch (err) {
+                // กรณีบราวเซอร์บล็อกการอ่าน Response หลัง 302 Redirect (แต่หลังบ้านรันเสร็จแล้ว)
+                await new Promise(r => setTimeout(r, 1500));
                 return { status: "success", fallback: true };
             }
         }
@@ -765,7 +776,6 @@
             }
         }
 
-        // แปลงวันที่จากชีตให้เป็น Date Object ที่เชื่อถือได้เสมอ (รองรับทั้ง ค.ศ. และ พ.ศ.)
         function parseFlexibleDate(val) {
             if (!val) return null;
             const d = new Date(val);
@@ -847,7 +857,7 @@
         }
 
         function renderAllViews() {
-            populateAssigneeDropdown();
+            updateTargetUsersPreview();
             renderHomeDashboard();
             refreshCalendarEvents();
             renderTrackTasks();
@@ -864,12 +874,33 @@
             return matchDept && matchCare;
         }
 
-        function populateAssigneeDropdown() {
-            const sel = document.getElementById("taskAssignee");
-            sel.innerHTML = `<option value="ALL_IN_GROUP">-- ทุกคนตามกลุ่มที่เลือก --</option>`;
-            appData.users.forEach(u => {
-                sel.innerHTML += `<option value="${u.userId}">${u.fullName} (${u.department} | ${u.careType || 'OPD'})</option>`;
+        // แสดงรูปโปรไฟล์คนที่ต้องส่งงานอัตโนมัติในฟอร์ม "+ เพิ่มงาน" เมื่อเลือก หน่วยงาน / ประเภท (ทั้งหมด / OPD / IPD)
+        function updateTargetUsersPreview() {
+            const dept = document.getElementById("taskTargetDept").value;
+            const care = document.getElementById("taskTargetCareType").value;
+            const box = document.getElementById("targetUsersPreviewBox");
+            const label = document.getElementById("targetUsersPreviewLabel");
+
+            const matchedUsers = (appData.users || []).filter(u => {
+                const matchDept = (dept === "ALL") || (u.department === dept);
+                const uCare = u.careType || "OPD";
+                const matchCare = (care === "ALL") || (uCare === care);
+                return matchDept && matchCare;
             });
+
+            label.innerText = `👥 รายชื่อผู้ที่ต้องส่งงานตามประเภทที่เลือก (${matchedUsers.length} คน):`;
+            if (matchedUsers.length === 0) {
+                box.innerHTML = `<span class="text-xs text-slate-400">ยังไม่มีสมาชิกในกลุ่มประเภทนี้ (ระบบจะส่งให้สมาชิกใหม่ที่ตรงประเภทอัตโนมัติ)</span>`;
+                return;
+            }
+
+            box.innerHTML = matchedUsers.map(u => `
+                <div class="avatar-chip" title="${u.fullName} (${u.department} | ${u.careType || 'OPD'})">
+                    <img src="${u.pictureUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}">
+                    <span>${getFirstNameOnly(u.fullName)}</span>
+                    <span class="text-[10px] px-1.5 py-0 rounded-pill ${u.careType === 'IPD' ? 'bg-purple-100 text-purple-700' : 'bg-sky-100 text-sky-700'}">${u.careType || 'OPD'}</span>
+                </div>
+            `).join('');
         }
 
         function renderHomeDashboard() {
@@ -1184,13 +1215,10 @@
             new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
-        // แก้ไขตารางบันทึกการประชุมให้ดึงข้อมูลได้ชัวร์ 100% (ใช้ destroy() แล้วสร้าง HTML แถวใหม่ทุกครั้ง)
         function renderMeetingsDataTable() {
-            const monthFilter = document.getElementById("filterMeetingMonthYear").value; // YYYY-MM
+            const monthFilter = document.getElementById("filterMeetingMonthYear").value;
 
             let filteredList = [...(appData.meetings || [])];
-
-            // กรองตามเดือน/ปี ด้วย Date Object จริง (ไม่พังแม้รูปแบบวันที่จากชีตจะต่างกัน)
             if (monthFilter) {
                 const [fYear, fMonth] = monthFilter.split('-').map(Number);
                 filteredList = filteredList.filter(m => {
@@ -1200,14 +1228,12 @@
                 });
             }
 
-            // เรียงเรื่องล่าสุดอยู่บนสุดเสมอ
             filteredList.sort((a, b) => {
                 const dA = parseFlexibleDate(a.meetingDate);
                 const dB = parseFlexibleDate(b.meetingDate);
                 return (dB ? dB.getTime() : 0) - (dA ? dA.getTime() : 0);
             });
 
-            // ทำลาย DataTable ตัวเก่าก่อนอัปเดต HTML ใหม่
             if ($.fn.DataTable.isDataTable('#meetingsDataTable')) {
                 $('#meetingsDataTable').DataTable().destroy();
             }
@@ -1317,7 +1343,10 @@
             `).join('');
         }
 
-        function openCreateTaskModal() { new bootstrap.Modal(document.getElementById('createTaskModal')).show(); }
+        function openCreateTaskModal() {
+            updateTargetUsersPreview();
+            new bootstrap.Modal(document.getElementById('createTaskModal')).show();
+        }
         function openAddMeetingModal() { new bootstrap.Modal(document.getElementById('addMeetingModal')).show(); }
 
         function openSubmitWorkModal(taskId) {
@@ -1333,7 +1362,7 @@
             const title = document.getElementById("taskTitle").value.trim();
             const dueDate = document.getElementById("taskDueDate").value;
             if (!title || !dueDate) {
-                Swal.fire("ข้อมูลไม่ครบ", "กรุณาระบุหัวข้อและวัน-เวลาครบกำหนด", "warning");
+                Swal.fire("ข้อมูลไม่ครบ", "กรุณาระบุเรื่องและวัน-เวลาครบกำหนด", "warning");
                 return;
             }
 
@@ -1349,7 +1378,7 @@
                     detail: document.getElementById("taskDetail").value.trim(),
                     targetDept: document.getElementById("taskTargetDept").value,
                     targetCareType: document.getElementById("taskTargetCareType").value,
-                    assignee: document.getElementById("taskAssignee").value,
+                    assignee: "ALL_IN_GROUP",
                     dueDate: dueDate,
                     createdBy: currentUser.fullName
                 },
@@ -1443,7 +1472,6 @@
             document.getElementById("meetTitle").value = "";
             document.getElementById("meetFile").value = "";
 
-            // ล้างตัวกรองเดือนเพื่อแสดงรายการใหม่ในตารางทันที
             document.getElementById("filterMeetingMonthYear").value = "";
             await loadAllData();
             switchTab('tab-meetings');
