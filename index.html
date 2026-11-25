@@ -44,7 +44,7 @@
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-radius: 26px;
             box-shadow: 0 8px 28px rgba(16, 185, 129, 0.08);
         }
         .glass-pill {
@@ -155,9 +155,100 @@
             cursor: pointer;
         }
         .avatar-chip img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-        .fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 800; color: #065f46; }
-        .fc .fc-button-primary { background-color: #10b981 !important; border-color: #10b981 !important; border-radius: 12px !important; }
-        .fc-event { border-radius: 8px !important; padding: 2px 5px !important; font-size: 0.82rem !important; border: none !important; cursor: pointer; }
+
+        /* ==============================================================
+           MODERN GLASSMORPHISM CALENDAR STYLING (ขอบโค้ง ทันสมัย โปร่งแสง)
+           ============================================================== */
+        .calendar-glass-wrapper {
+            background: rgba(255, 255, 255, 0.62);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1.5px solid rgba(255, 255, 255, 0.85);
+            border-radius: 28px;
+            padding: 14px 10px;
+            box-shadow: 0 10px 32px rgba(16, 185, 129, 0.10);
+        }
+        .fc .fc-toolbar {
+            margin-bottom: 10px !important;
+            gap: 6px;
+        }
+        .fc .fc-toolbar-title {
+            font-size: 1.15rem !important;
+            font-weight: 800;
+            color: #065f46;
+        }
+        .fc .fc-button-primary {
+            background: rgba(16, 185, 129, 0.88) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border-radius: 14px !important;
+            font-size: 0.85rem !important;
+            font-weight: 700 !important;
+            padding: 4px 10px !important;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+        .fc .fc-button-primary:hover, .fc .fc-button-active {
+            background: #047857 !important;
+        }
+        .fc-theme-standard .fc-scrollgrid {
+            border: 1px solid rgba(16, 185, 129, 0.18) !important;
+            border-radius: 20px !important;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.45);
+        }
+        .fc-theme-standard td, .fc-theme-standard th {
+            border-color: rgba(16, 185, 129, 0.14) !important;
+        }
+        .fc .fc-col-header-cell {
+            background: rgba(209, 250, 229, 0.55);
+            padding: 4px 0;
+        }
+        .fc .fc-col-header-cell-cushion {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #065f46;
+            text-decoration: none;
+        }
+        .fc .fc-daygrid-day-number {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #334155;
+            text-decoration: none;
+            padding: 3px 6px !important;
+        }
+        .fc .fc-day-today {
+            background: rgba(167, 243, 208, 0.35) !important;
+        }
+        /* ปรับแถบชื่อเรื่องในช่องปฏิทินให้ตัวเล็กลง อ่านง่าย ขอบโค้ง และกดดูรายละเอียดได้ */
+        .fc-daygrid-event {
+            border-radius: 8px !important;
+            padding: 1px 4px !important;
+            margin: 1px 2px !important;
+            border: none !important;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            transition: transform 0.12s ease;
+        }
+        .fc-daygrid-event:active {
+            transform: scale(0.95);
+        }
+        .fc-event-title {
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+            line-height: 1.2 !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* ซ่อนเวลาหน้าชื่อเรื่องในช่องปฏิทิน เพื่อให้แสดงเฉพาะชื่อเรื่องล้วนๆ ไม่รกช่องแคบ */
+        .fc-event-time {
+            display: none !important;
+        }
+        .fc .fc-daygrid-more-link {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #047857;
+        }
+
         .fab-btn {
             position: fixed;
             bottom: 88px;
@@ -274,24 +365,28 @@
             </div>
         </div>
 
-        <!-- TAB 2: ปฏิทิน -->
+        <!-- TAB 2: ปฏิทิน (ขอบโค้ง ทันสมัย โปร่งแสง แสดงชื่อเรื่องกระชับ กดดูรายละเอียดได้) -->
         <div id="tab-calendar" class="tab-pane-section">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="fw-bold text-slate-800 mb-0">🗓️ ปฏิทินงาน วาระประชุม & กำหนดส่ง</h5>
-                <select id="filterCalCareType" class="form-select form-select-sm w-auto rounded-pill bg-white/90 fw-bold" onchange="refreshCalendarEvents()">
+                <h5 class="fw-bold text-slate-800 mb-0">🗓️ ปฏิทินงาน & วาระประชุม</h5>
+                <select id="filterCalCareType" class="form-select form-select-sm w-auto rounded-pill bg-white/80 backdrop-blur border-emerald-200 fw-bold" onchange="refreshCalendarEvents()">
                     <option value="ALL">ทุกประเภท (OPD+IPD)</option>
                     <option value="OPD">🩺 เฉพาะ OPD</option>
                     <option value="IPD">🛏️ เฉพาะ IPD</option>
                 </select>
             </div>
-            <div class="d-flex flex-wrap gap-2 mb-2">
-                <span class="badge rounded-pill px-3 py-1" style="background:#10b981;">📋 กำหนดส่งงาน</span>
-                <span class="badge rounded-pill px-3 py-1" style="background:#f59e0b; color:#000;">📅 วาระนัดประชุม</span>
-                <span class="badge rounded-pill px-3 py-1" style="background:#3b82f6;">📘 บันทึกการประชุม</span>
+
+            <div class="d-flex flex-wrap gap-1.5 mb-2">
+                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(16,185,129,0.9);">📋 กำหนดส่งงาน</span>
+                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(245,158,11,0.92); color:#000;">📅 วาระนัดประชุม</span>
+                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(59,130,246,0.9);">📘 บันทึกประชุม</span>
+                <span class="text-xs text-slate-500 ms-auto align-self-center">* แตะที่ชื่อเรื่องเพื่อดูรายละเอียด</span>
             </div>
-            <div class="glass-card p-3 mb-3">
+
+            <div class="calendar-glass-wrapper mb-3">
                 <div id="fullCalendarEl"></div>
             </div>
+
             <div id="selectedDateEventsBox" class="glass-card p-3" style="display:none;">
                 <h6 class="fw-bold text-emerald-700 mb-2" id="selectedDateTitle">รายการวันที่เลือก</h6>
                 <div id="selectedDateEventList"></div>
@@ -833,13 +928,14 @@
 
             Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
-                await postToGAS({ action: "saveUser", user: currentUser });
+                const res = await postToGAS({ action: "saveUser", user: currentUser });
+                if (res.status === "error") throw new Error(res.message);
                 Swal.close();
                 if (!silent) Swal.fire("สำเร็จ", "บันทึกข้อมูลโปรไฟล์ หน่วยงาน และประเภท OPD/IPD เรียบร้อย", "success");
                 await loadAllData();
             } catch (err) {
                 Swal.close();
-                Swal.fire("ผิดพลาด", "ไม่สามารถบันทึกได้ กรุณาลองใหม่", "error");
+                Swal.fire("ผิดพลาด", "ไม่สามารถบันทึกได้: " + err.message, "error");
             }
         }
 
@@ -917,6 +1013,7 @@
             }).join('');
         }
 
+        // ปฏิทินขอบโค้ง ทันสมัย โปร่งแสง แสดงชื่อเรื่องกระชับ กดดูรายละเอียดได้
         function initFullCalendar() {
             const calendarEl = document.getElementById('fullCalendarEl');
             calendarInstance = new FullCalendar.Calendar(calendarEl, {
@@ -925,6 +1022,8 @@
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
                 buttonText: { today: 'วันนี้', month: 'เดือน', list: 'รายการ' },
                 height: 'auto',
+                dayMaxEvents: 3, // ป้องกันช่องปฏิทินยืดยาวเกินไปบนมือถือ
+                displayEventTime: false, // ซ่อนตัวเลขเวลา แสดงเฉพาะชื่อเรื่องในช่องปฏิทิน
                 events: [],
                 eventClick: function(info) {
                     const props = info.event.extendedProps;
@@ -941,15 +1040,16 @@
             const careFilter = document.getElementById("filterCalCareType").value;
             const events = [];
 
+            // ใส่เฉพาะชื่อเรื่องสั้นๆ ในช่องปฏิทิน ไม่ใส่คำนำหน้ายาวๆ
             appData.tasks.forEach(t => {
                 if (careFilter !== "ALL" && t.targetCareType !== "ALL" && t.targetCareType !== careFilter) return;
                 const isMeeting = t.type === "ประชุม";
                 events.push({
                     id: t.taskId,
-                    title: `${isMeeting ? '📅' : '📋'} ${t.title}`,
+                    title: t.title,
                     start: t.dueDate,
-                    backgroundColor: isMeeting ? '#f59e0b' : '#10b981',
-                    textColor: isMeeting ? '#000000' : '#ffffff',
+                    backgroundColor: isMeeting ? 'rgba(245, 158, 11, 0.88)' : 'rgba(16, 185, 129, 0.88)',
+                    textColor: isMeeting ? '#1e293b' : '#ffffff',
                     extendedProps: { sourceType: 'TASK', taskId: t.taskId }
                 });
             });
@@ -958,9 +1058,9 @@
                 if (careFilter !== "ALL" && m.careType && m.careType !== "OPD/IPD" && m.careType !== careFilter) return;
                 events.push({
                     id: m.meetingId,
-                    title: `📘 บันทึก: ${m.title}`,
+                    title: m.title,
                     start: m.meetingDate,
-                    backgroundColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.88)',
                     textColor: '#ffffff',
                     extendedProps: { sourceType: 'MEETING_RECORD', meeting: m }
                 });
@@ -1144,44 +1244,49 @@
             new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
+        // DataTables ใช้ Array API โดยตรง เรียงเรื่องล่าสุดอยู่บนสุดเสมอ
         function renderMeetingsDataTable() {
-            if (meetingsTableInstance) meetingsTableInstance.destroy();
-            const sortedMeetings = [...appData.meetings].sort((a, b) => new Date(b.meetingDate) - new Date(a.meetingDate));
-
-            const tbody = document.getElementById("meetingsTableBody");
-            tbody.innerHTML = sortedMeetings.map(m => `
-                <tr>
-                    <td data-order="${m.meetingDate}">
-                        <div class="fw-bold text-emerald-700">${formatDateTimeThai(m.meetingDate)}</div>
-                    </td>
-                    <td>
-                        <div class="fw-bold">${m.title}</div>
-                        <div class="text-slate-600 text-sm">${m.summary || '-'}</div>
-                        ${m.note ? `<div class="text-amber-700 text-xs fw-bold mt-0.5">📌 ${m.note}</div>` : ''}
-                    </td>
-                    <td>
-                        <div class="mb-1"><span class="badge-dept">${m.department}</span></div>
-                        ${renderCareTypeBadge(m.careType)}
-                    </td>
-                    <td>
-                        ${m.fileUrl
-                            ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 เปิดดู</button>`
-                            : `<span class="text-slate-400 text-sm">ไม่มีไฟล์</span>`}
-                    </td>
-                </tr>
-            `).join('');
-
-            meetingsTableInstance = $('#meetingsDataTable').DataTable({
-                order: [[0, 'desc']],
-                pageLength: 10,
-                language: {
-                    search: "ค้นหา:",
-                    lengthMenu: "แสดง _MENU_ รายการ",
-                    info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ เรื่อง",
-                    paginate: { previous: "ก่อนหน้า", next: "ถัดไป" },
-                    zeroRecords: "ไม่พบบันทึกการประชุม"
-                }
+            const sortedMeetings = [...(appData.meetings || [])].sort((a, b) => {
+                const dateA = new Date(a.meetingDate).getTime() || 0;
+                const dateB = new Date(b.meetingDate).getTime() || 0;
+                return dateB - dateA;
             });
+
+            const tableRows = sortedMeetings.map(m => {
+                const dateCell = `<span class="d-none">${m.meetingDate || ''}</span><div class="fw-bold text-emerald-700">${formatDateTimeThai(m.meetingDate)}</div>`;
+                const titleCell = `
+                    <div class="fw-bold">${m.title || '-'}</div>
+                    <div class="text-slate-600 text-sm">${m.summary || '-'}</div>
+                    ${m.note ? `<div class="text-amber-700 text-xs fw-bold mt-0.5">📌 ${m.note}</div>` : ''}
+                `;
+                const deptCell = `
+                    <div class="mb-1"><span class="badge-dept">${m.department || '-'}</span></div>
+                    ${renderCareTypeBadge(m.careType)}
+                `;
+                const fileCell = m.fileUrl
+                    ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 เปิดดู</button>`
+                    : `<span class="text-slate-400 text-sm">ไม่มีไฟล์</span>`;
+
+                return [dateCell, titleCell, deptCell, fileCell];
+            });
+
+            if ($.fn.DataTable.isDataTable('#meetingsDataTable')) {
+                meetingsTableInstance.clear().rows.add(tableRows).draw();
+            } else {
+                meetingsTableInstance = $('#meetingsDataTable').DataTable({
+                    data: tableRows,
+                    order: [[0, 'desc']],
+                    pageLength: 10,
+                    language: {
+                        search: "ค้นหา:",
+                        lengthMenu: "แสดง _MENU_ รายการ",
+                        info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ เรื่อง",
+                        paginate: { previous: "ก่อนหน้า", next: "ถัดไป" },
+                        zeroRecords: "ไม่พบบันทึกการประชุม",
+                        emptyTable: "ยังไม่มีข้อมูลบันทึกการประชุม"
+                    }
+                });
+            }
         }
 
         function filterMeetingTable() {
@@ -1292,14 +1397,16 @@
                     file: fileData
                 };
 
-                await postToGAS(payload);
+                const res = await postToGAS(payload);
+                if (res.status === "error") throw new Error(res.message);
+
                 Swal.close();
                 bootstrap.Modal.getInstance(document.getElementById('createTaskModal')).hide();
                 document.getElementById("taskTitle").value = "";
                 document.getElementById("taskDetail").value = "";
                 document.getElementById("taskAttachmentFile").value = "";
                 await loadAllData();
-                Swal.fire("สำเร็จ", "บันทึกข้อมูลและส่งแจ้งเตือนเข้า LINE เรียบร้อยแล้ว", "success");
+                Swal.fire("สำเร็จ", "บันทึกข้อมูลลงชีตและปฏิทินเรียบร้อยแล้ว", "success");
             } catch (err) {
                 Swal.close();
                 Swal.fire("เกิดข้อผิดพลาด", "กรุณาลองใหม่อีกครั้ง: " + err.message, "error");
@@ -1331,6 +1438,8 @@
                 };
 
                 const res = await postToGAS(payload);
+                if (res.status === "error") throw new Error(res.message);
+
                 Swal.close();
                 bootstrap.Modal.getInstance(document.getElementById('submitWorkModal')).hide();
                 await loadAllData();
@@ -1374,9 +1483,7 @@
                 };
 
                 const res = await postToGAS(payload);
-                if (res.status === "error") {
-                    throw new Error(res.message);
-                }
+                if (res.status === "error") throw new Error(res.message);
 
                 Swal.close();
                 bootstrap.Modal.getInstance(document.getElementById('addMeetingModal')).hide();
@@ -1385,7 +1492,7 @@
                 document.getElementById("meetFile").value = "";
 
                 await loadAllData();
-                switchTab('tab-meetings'); // สลับมาหน้าตารางบันทึกการประชุมทันที
+                switchTab('tab-meetings');
 
                 Swal.fire({
                     title: "บันทึกสำเร็จ 🎉",
