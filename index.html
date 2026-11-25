@@ -322,6 +322,30 @@
         .pp-info { background: rgba(241,245,249,0.85); border-radius: 16px; padding: 10px 12px; font-size: 0.92rem; color: #334155; line-height: 1.7; }
         .pp-rank { display: inline-block; font-weight: 800; font-size: 0.85rem; color: #92400e; background: #fef3c7; border-radius: 12px; padding: 2px 10px; margin-bottom: 8px; }
 
+        /* ช่องเลือกกลุ่มเป้าหมาย (รวมหน่วยงาน + OPD/IPD) */
+        .target-toggle {
+            width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            background: #fff; border: 1px solid #dee2e6; border-radius: 1rem; padding: 8px 14px;
+            font-weight: 700; color: #065f46; text-align: left; min-width: 0;
+        }
+        .target-panel { margin-top: 8px; background: rgba(236, 253, 245, 0.7); border: 1px solid #a7f3d0; border-radius: 16px; padding: 10px 10px 4px 10px; }
+        .tp-sec { font-size: 0.75rem; font-weight: 800; color: #64748b; margin: 6px 0 6px 2px; }
+        .tchip {
+            display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1; background: #fff; color: #334155;
+            border-radius: 9999px; padding: 4px 11px; font-size: 0.86rem; font-weight: 700; margin: 0 6px 6px 0;
+        }
+        .tchip.active { background: #10b981; border-color: #059669; color: #fff; box-shadow: 0 3px 10px rgba(16,185,129,0.35); }
+        .tchip .tcount { font-size: 0.72rem; background: rgba(15,23,42,0.08); border-radius: 9999px; padding: 0 6px; }
+        .tchip.active .tcount { background: rgba(255,255,255,0.28); }
+
+        /* รายชื่อหัวหน้าตึก */
+        .dir-group-title { font-weight: 800; color: #065f46; font-size: 0.95rem; margin: 6px 0 2px 0; }
+        .mini-btn { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; background: rgba(255,255,255,0.9); padding: 0; font-size: 0.85rem; }
+        .mini-btn.edit { color: #2563eb; border-color: #bfdbfe; }
+        .mini-btn.del { color: #dc2626; border-color: #fecaca; }
+        .scifi-eye-btn.sm { width: 34px; height: 34px; }
+        .scifi-eye-btn.sm svg { width: 17px; height: 17px; }
+
         /* กล่องข้อมูลผู้ส่งในหน้าต่างส่งงาน */
         .submitter-card { background: rgba(239, 246, 255, 0.9); border: 1px solid #bfdbfe; border-radius: 20px; padding: 10px 12px; }
         .submitter-card img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.45); flex-shrink: 0; background: #fff; }
@@ -485,14 +509,13 @@
         <div id="tab-profile" class="tab-pane-section">
             <div class="glass-card p-4 text-center mb-3">
                 <img id="profilePageAvatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle mx-auto mb-2 border border-3 border-emerald-500 shadow" style="width:86px;height:86px;object-fit:cover;">
-                <h5 class="fw-bold mb-0" id="profilePageLineName">-</h5>
-                <small class="text-slate-500 mb-3 d-block">LINE ID: <span id="profilePageUserId">-</span></small>
+                <h5 class="fw-bold mb-3" id="profilePageLineName">-</h5>
 
                 <div class="text-start">
-                    <label class="form-label fw-bold mb-1">👩‍⚕️ ชื่อ-นามสกุล (สำหรับแสดงในระบบ)</label>
+                    <label class="form-label fw-bold mb-1">👩‍⚕️ ชื่อ-นามสกุล</label>
                     <input type="text" id="inputFullName" class="form-control rounded-4 mb-3">
 
-                    <label class="form-label fw-bold mb-1">🏥 หน่วยงาน / แผนกที่สังกัด</label>
+                    <label class="form-label fw-bold mb-1">🏥 หน่วยงาน</label>
                     <select id="inputDepartment" class="form-select rounded-4 mb-3">
                         <option value="หน่วยไตเทียม">หน่วยไตเทียม</option>
                         <option value="กลุ่มการพยาบาล">กลุ่มการพยาบาล</option>
@@ -510,13 +533,13 @@
                     </select>
 
                     <button class="btn btn-success w-100 rounded-pill py-2.5 fw-bold shadow-sm" onclick="saveUserProfile()">
-                        💾 บันทึกข้อมูลโปรไฟล์ & หน่วยงาน
+                        💾 บันทึกข้อมูล
                     </button>
                 </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="fw-bold text-slate-800 mb-0">👥 ทำเนียบสมาชิก (แยกตาม OPD / IPD)</h5>
+                <h5 class="fw-bold text-slate-800 mb-0">👥 รายชื่อหัวหน้าตึก</h5>
                 <select id="filterDirCareType" class="form-select form-select-sm w-auto rounded-pill bg-white/90 fw-bold" onchange="renderMemberDirectory()">
                     <option value="ALL">ทั้งหมด</option>
                     <option value="OPD">เฉพาะ OPD</option>
@@ -567,7 +590,7 @@
 
                     <div class="mb-2">
                         <label class="form-label fw-bold mb-1">📄 รายละเอียด / วาระ / สถานที่</label>
-                        <textarea id="taskDetail" class="form-control rounded-4" rows="3" placeholder="ระบุรายละเอียด / วาระ / สถานที่..."></textarea>
+                        <textarea id="taskDetail" class="form-control rounded-4" rows="3"></textarea>
                     </div>
 
                     <!-- เอกสารประกอบ อยู่ต่อท้าย รายละเอียด / วาระ / สถานที่ -->
@@ -582,28 +605,15 @@
                         <input type="datetime-local" id="taskDueDate" class="form-control rounded-4">
                     </div>
 
-                    <!-- หน่วยงานที่รับผิดชอบ + ประเภท (ทั้งหมด / OPD / IPD) -->
-                    <div class="row g-2 mb-2">
-                        <div class="col-6">
-                            <label class="form-label fw-bold mb-1">🏥 หน่วยงานที่รับผิดชอบ</label>
-                            <select id="taskTargetDept" class="form-select rounded-4" onchange="updateTargetUsersPreview()">
-                                <option value="ALL">ทุกหน่วยงาน</option>
-                                <option value="หน่วยไตเทียม">หน่วยไตเทียม</option>
-                                <option value="กลุ่มการพยาบาล">กลุ่มการพยาบาล</option>
-                                <option value="งานควบคุมการติดเชื้อ (IC)">งานควบคุมการติดเชื้อ (IC)</option>
-                                <option value="งานพัฒนาคุณภาพ (CQI/HA)">งานพัฒนาคุณภาพ (CQI/HA)</option>
-                                <option value="ห้องตรวจโรค (OPD)">ห้องตรวจโรค (OPD)</option>
-                                <option value="หอผู้ป่วยใน (IPD)">หอผู้ป่วยใน (IPD)</option>
-                                <option value="อื่นๆ">อื่นๆ</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label fw-bold mb-1">🏷️ ประเภทกลุ่มเป้าหมาย</label>
-                            <select id="taskTargetCareType" class="form-select rounded-4" onchange="updateTargetUsersPreview()">
-                                <option value="ALL">🌟 ทั้งหมด (OPD + IPD)</option>
-                                <option value="OPD">🩺 OPD</option>
-                                <option value="IPD">🛏️ IPD</option>
-                            </select>
+                    <!-- กลุ่มเป้าหมาย/หน่วยงาน รวมเป็นช่องเดียว เลือกได้หลายรายการ (หน่วยงานดึงจากผู้ที่ลงทะเบียนจริง) -->
+                    <div class="mb-2">
+                        <label class="form-label fw-bold mb-1">🎯 กลุ่มเป้าหมาย / หน่วยงานที่รับผิดชอบ</label>
+                        <button type="button" class="target-toggle" onclick="toggleTargetPanel()">
+                            <span id="targetSummary" class="text-truncate">🌟 ทั้งหมด</span>
+                            <i class="fa-solid fa-chevron-down" id="targetChevron"></i>
+                        </button>
+                        <div id="targetPanel" class="target-panel d-none">
+                            <div id="targetPickerChips"></div>
                         </div>
                     </div>
 
@@ -840,7 +850,8 @@
                     return JSON.parse(text);
                 } catch (e) {
                     // หลังบ้านตอบกลับเป็นหน้าเว็บแทนข้อมูล เช่น ยังไม่อนุญาตสิทธิ์ หรือยังไม่ได้ทำให้ใช้งานได้เวอร์ชันใหม่
-                    return { status: "error", message: "ระบบหลังบ้านตอบกลับไม่ถูกต้อง กรุณาแจ้งผู้ดูแลให้ตรวจการอนุญาตสิทธิ์และการทำให้ใช้งานได้ของ Apps Script" };
+                    const hint = (text.match(/<title>([^<]*)<\/title>/i) || [])[1] || text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 120);
+                    return { status: "error", message: "ระบบหลังบ้านตอบกลับไม่ถูกต้อง (" + response.status + ") " + hint + " — กรุณาตรวจการอนุญาตสิทธิ์และการทำให้ใช้งานได้ของ Apps Script" };
                 }
             } catch (err) {
                 // กรณีบราวเซอร์บล็อกการอ่านคำตอบหลังการส่งต่อ 302 (หลังบ้านอาจรันเสร็จแล้ว) — ผู้เรียกต้องตรวจผลซ้ำ
@@ -881,7 +892,6 @@
 
             document.getElementById("profilePageAvatar").src = currentUser.pictureUrl;
             document.getElementById("profilePageLineName").innerText = currentUser.displayName;
-            document.getElementById("profilePageUserId").innerText = currentUser.userId;
             document.getElementById("inputFullName").value = currentUser.fullName || currentUser.displayName;
             if (currentUser.department) document.getElementById("inputDepartment").value = currentUser.department;
             if (currentUser.careType && (currentUser.careType === "OPD" || currentUser.careType === "IPD")) {
@@ -993,11 +1003,13 @@
                 Swal.fire("ผิดพลาด", res.message, "error");
                 return;
             }
-            if (!silent) Swal.fire("สำเร็จ", "บันทึกข้อมูลโปรไฟล์และหน่วยงานเรียบร้อย", "success");
+            if (!silent) Swal.fire("สำเร็จ", "บันทึกข้อมูลเรียบร้อย", "success");
             await loadAllData();
         }
 
         function renderAllViews() {
+            refreshTrackDeptFilter();
+            renderTargetPicker();
             updateTargetUsersPreview();
             renderHomeDashboard();
             refreshCalendarEvents();
@@ -1007,27 +1019,125 @@
             renderMemberDirectory();
         }
 
-        function isUserTargeted(task, user) {
-            if (task.assignee && task.assignee !== "ALL_IN_GROUP") return task.assignee === user.userId;
-            const matchDept = (task.targetDept === "ALL") || (task.targetDept === user.department);
-            const userCare = user.careType || "OPD";
-            const matchCare = (task.targetCareType === "ALL") || !task.targetCareType || (userCare === task.targetCareType);
-            return matchDept && matchCare;
+        // ======================= กลุ่มเป้าหมายของงาน =======================
+        // แบบใหม่ (task.targets): "ALL" หรือ "ประเภท:IPD | หน่วยงาน:หน่วยไตเทียม" — ตรงรายการใดรายการหนึ่งถือว่าเป็นผู้รับงาน
+        // แบบเดิม (งานเก่าที่ไม่มี targets): หน่วยงาน และ ประเภทบริการ ต้องตรงทั้งคู่
+        function parseTargets(task) {
+            const raw = String((task && task.targets) || "").trim();
+            if (!raw) return { legacy: true, dept: task.targetDept, care: task.targetCareType };
+            if (raw === "ALL" || raw === "ทั้งหมด") return { all: true, cares: [], depts: [] };
+            const cares = [], depts = [];
+            raw.split("|").forEach(tok => {
+                tok = tok.trim();
+                const i = tok.indexOf(":");
+                if (i < 0) return;
+                const k = tok.slice(0, i).trim(), v = tok.slice(i + 1).trim();
+                if (!v) return;
+                if (k === "ประเภท") cares.push(v); else if (k === "หน่วยงาน") depts.push(v);
+            });
+            if (!cares.length && !depts.length) return { all: true, cares: [], depts: [] };
+            return { all: false, cares, depts };
         }
 
-        // แสดงรูปโปรไฟล์คนที่ต้องส่งงานอัตโนมัติในฟอร์ม "+ เพิ่มงาน" เมื่อเลือก หน่วยงาน / ประเภท (ทั้งหมด / OPD / IPD)
+        function isUserTargeted(task, user) {
+            if (task.assignee && task.assignee !== "ALL_IN_GROUP") return task.assignee === user.userId;
+            const t = parseTargets(task);
+            const userCare = user.careType || "OPD";
+            if (t.legacy) {
+                const matchDept = (t.dept === "ALL") || (t.dept === user.department);
+                const matchCare = (t.care === "ALL") || !t.care || (userCare === t.care);
+                return matchDept && matchCare;
+            }
+            if (t.all) return true;
+            return t.cares.includes(userCare) || t.depts.includes(user.department);
+        }
+
+        // งานนี้เกี่ยวกับ OPD/IPD ที่เลือกในตัวกรองหรือไม่
+        function taskTouchesCare(task, care) {
+            const t = parseTargets(task);
+            if (t.legacy) return t.care === "ALL" || !t.care || t.care === care;
+            if (t.all || t.cares.includes(care)) return true;
+            return (appData.users || []).some(u => (u.careType || "OPD") === care && t.depts.includes(u.department));
+        }
+
+        // งานนี้เกี่ยวกับหน่วยงานที่เลือกในตัวกรองหรือไม่
+        function taskTouchesDept(task, dept) {
+            const t = parseTargets(task);
+            if (t.legacy) return t.dept === "ALL" || t.dept === dept;
+            if (t.all || t.depts.includes(dept)) return true;
+            return (appData.users || []).some(u => u.department === dept && t.cares.includes(u.careType || "OPD"));
+        }
+
+        function renderTargetBadges(task) {
+            const t = parseTargets(task);
+            if (t.legacy) return `<span class="badge-dept">🏥 ${t.dept === 'ALL' ? 'ทุกหน่วยงาน' : esc(t.dept)}</span>${renderCareTypeBadge(t.care)}`;
+            if (t.all) return `<span class="badge-dept">🌟 ทั้งหมด</span>`;
+            return t.cares.map(c => renderCareTypeBadge(c)).join('') + t.depts.map(d => `<span class="badge-dept">🏥 ${esc(d)}</span>`).join('');
+        }
+
+        // หน่วยงานที่มีผู้ลงทะเบียนจริง
+        function getRegisteredDepts() {
+            const set = new Set((appData.users || []).map(u => String(u.department || "").trim()).filter(Boolean));
+            return Array.from(set).sort((a, b) => a.localeCompare(b, 'th'));
+        }
+
+        let selectedTargets = { all: true, cares: [], depts: [] };
+
+        function targetsToString(sel) {
+            if (sel.all) return "ALL";
+            return sel.cares.map(c => "ประเภท:" + c).concat(sel.depts.map(d => "หน่วยงาน:" + d)).join(" | ");
+        }
+
+        function toggleTargetPanel() {
+            const p = document.getElementById("targetPanel");
+            p.classList.toggle("d-none");
+            document.getElementById("targetChevron").style.transform = p.classList.contains("d-none") ? "" : "rotate(180deg)";
+        }
+
+        function toggleTarget(kind, encVal) {
+            const val = decodeURIComponent(encVal || "");
+            if (kind === "ALL") {
+                selectedTargets = { all: true, cares: [], depts: [] };
+            } else {
+                selectedTargets.all = false;
+                const arr = kind === "CARE" ? selectedTargets.cares : selectedTargets.depts;
+                const i = arr.indexOf(val);
+                if (i >= 0) arr.splice(i, 1); else arr.push(val);
+                if (!selectedTargets.cares.length && !selectedTargets.depts.length) selectedTargets.all = true;
+            }
+            renderTargetPicker();
+            updateTargetUsersPreview();
+        }
+
+        function renderTargetPicker() {
+            const users = appData.users || [];
+            const depts = getRegisteredDepts();
+            // ตัดหน่วยงานที่ไม่มีผู้ลงทะเบียนแล้วออกจากรายการที่เลือกไว้
+            selectedTargets.depts = selectedTargets.depts.filter(d => depts.includes(d));
+            if (!selectedTargets.all && !selectedTargets.cares.length && !selectedTargets.depts.length) selectedTargets.all = true;
+
+            const chip = (kind, val, label, n, active) =>
+                `<button type="button" class="tchip ${active ? 'active' : ''}" onclick="toggleTarget('${kind}','${enc(val)}')">${label}<span class="tcount">${n}</span></button>`;
+            let html = chip("ALL", "", "🌟 ทั้งหมด", users.length, selectedTargets.all);
+            html += `<div class="tp-sec">ประเภทบริการ</div>`;
+            html += chip("CARE", "OPD", "🩺 OPD ทั้งหมด", users.filter(u => (u.careType || "OPD") === "OPD").length, selectedTargets.cares.includes("OPD"));
+            html += chip("CARE", "IPD", "🛏️ IPD ทั้งหมด", users.filter(u => u.careType === "IPD").length, selectedTargets.cares.includes("IPD"));
+            html += `<div class="tp-sec">หน่วยงานที่มีผู้ลงทะเบียน</div>`;
+            html += depts.length
+                ? depts.map(d => chip("DEPT", d, "🏥 " + esc(d), users.filter(u => u.department === d).length, selectedTargets.depts.includes(d))).join('')
+                : `<div class="text-xs text-slate-400 mb-2">ยังไม่มีผู้ลงทะเบียนหน่วยงาน</div>`;
+            document.getElementById("targetPickerChips").innerHTML = html;
+
+            const summary = selectedTargets.all ? "🌟 ทั้งหมด" : selectedTargets.cares.concat(selectedTargets.depts).join(", ");
+            document.getElementById("targetSummary").innerText = summary;
+        }
+
+        // แสดงรูปโปรไฟล์คนที่ต้องส่งงานอัตโนมัติในฟอร์ม "+ เพิ่มงาน" ตามกลุ่มเป้าหมายที่เลือก
         function updateTargetUsersPreview() {
-            const dept = document.getElementById("taskTargetDept").value;
-            const care = document.getElementById("taskTargetCareType").value;
             const box = document.getElementById("targetUsersPreviewBox");
             const label = document.getElementById("targetUsersPreviewLabel");
-
-            const matchedUsers = (appData.users || []).filter(u => {
-                const matchDept = (dept === "ALL") || (u.department === dept);
-                const uCare = u.careType || "OPD";
-                const matchCare = (care === "ALL") || (uCare === care);
-                return matchDept && matchCare;
-            });
+            const probe = { assignee: "ALL_IN_GROUP", targets: targetsToString(selectedTargets) };
+            const matchedUsers = (appData.users || []).filter(u => isUserTargeted(probe, u));
 
             label.innerText = `👥 รายชื่อผู้ที่ต้องส่งงานตามประเภทที่เลือก (${matchedUsers.length} คน):`;
             if (matchedUsers.length === 0) {
@@ -1071,10 +1181,7 @@
                             <span class="badge ${isMeeting ? 'bg-amber-400 text-dark' : 'bg-emerald-600 text-white'} rounded-pill px-2.5">
                                 ${isMeeting ? '📅 วาระประชุม' : '📋 งานที่สั่ง'}
                             </span>
-                            <div class="d-flex gap-1">
-                                <span class="badge-dept">🏥 ${t.targetDept === 'ALL' ? 'ทุกหน่วยงาน' : t.targetDept}</span>
-                                ${renderCareTypeBadge(t.targetCareType)}
-                            </div>
+                            <div class="d-flex flex-wrap gap-1 justify-content-end">${renderTargetBadges(t)}</div>
                         </div>
                         <div class="fw-bold text-lg mt-1 text-slate-800">${t.title}</div>
                         <div class="text-slate-600 mb-2">${t.detail || '-'}</div>
@@ -1120,7 +1227,7 @@
             const events = [];
 
             appData.tasks.forEach(t => {
-                if (careFilter !== "ALL" && t.targetCareType !== "ALL" && t.targetCareType !== careFilter) return;
+                if (careFilter !== "ALL" && !taskTouchesCare(t, careFilter)) return;
                 const isMeeting = t.type === "ประชุม";
                 events.push({
                     id: t.taskId,
@@ -1161,7 +1268,7 @@
                     <div class="border border-emerald-200 rounded-4 p-3 mb-2 bg-emerald-50/60">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="badge ${t.type === 'ประชุม' ? 'bg-warning text-dark' : 'bg-success'}">${t.type}</span>
-                            ${renderCareTypeBadge(t.targetCareType)}
+                            ${renderTargetBadges(t)}
                         </div>
                         <div class="fw-bold text-lg">${t.title}</div>
                         <div class="text-slate-600 text-sm mb-2">${t.detail || '-'}</div>
@@ -1226,8 +1333,9 @@
                 cancelButtonText: 'ยกเลิก',
                 confirmButtonColor: '#ef4444',
                 preConfirm: (pin) => {
-                    if (pin !== "3402") {
-                        Swal.showValidationMessage('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่');
+                    // ตรวจรหัสที่หลังบ้านเท่านั้น (ไม่เก็บรหัสไว้ในหน้าเว็บ)
+                    if (!pin) {
+                        Swal.showValidationMessage('กรุณากรอกรหัสผ่าน');
                         return false;
                     }
                     return pin;
@@ -1250,13 +1358,22 @@
             });
         }
 
+        // ตัวกรองหน่วยงานในหน้าติดตามงาน ใช้เฉพาะหน่วยงานที่มีผู้ลงทะเบียนจริง
+        function refreshTrackDeptFilter() {
+            const sel = document.getElementById("filterTrackDept");
+            const keep = sel.value || "ALL";
+            const depts = getRegisteredDepts();
+            sel.innerHTML = `<option value="ALL">🏥 ทุกหน่วยงาน</option>` + depts.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+            sel.value = depts.includes(keep) ? keep : "ALL";
+        }
+
         function renderTrackTasks() {
             const deptFilter = document.getElementById("filterTrackDept").value;
             const careFilter = document.getElementById("filterTrackCareType").value;
 
             const filtered = appData.tasks.filter(t => {
-                const matchDept = (deptFilter === "ALL") || (t.targetDept === deptFilter) || (t.targetDept === "ALL");
-                const matchCare = (careFilter === "ALL") || (t.targetCareType === careFilter) || (t.targetCareType === "ALL");
+                const matchDept = (deptFilter === "ALL") || taskTouchesDept(t, deptFilter);
+                const matchCare = (careFilter === "ALL") || taskTouchesCare(t, careFilter);
                 return matchDept && matchCare;
             });
 
@@ -1271,10 +1388,7 @@
                     <div class="task-glass-item ${t.type === 'ประชุม' ? 'meeting' : ''}">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mb-1">
                             <span class="badge ${t.type === 'ประชุม' ? 'bg-amber-400 text-dark' : 'bg-emerald-600 text-white'} rounded-pill px-2.5">${t.type === 'ประชุม' ? '📅 วาระประชุม' : '📋 งานที่สั่ง'}</span>
-                            <div class="d-flex gap-1">
-                                <span class="badge-dept">🏥 ${t.targetDept === 'ALL' ? 'ทุกหน่วยงาน' : t.targetDept}</span>
-                                ${renderCareTypeBadge(t.targetCareType)}
-                            </div>
+                            <div class="d-flex flex-wrap gap-1 justify-content-end">${renderTargetBadges(t)}</div>
                         </div>
                         <div class="fw-bold text-lg mt-1">${t.title}</div>
                         <div class="text-slate-600 mb-2">${t.detail || '-'}</div>
@@ -1303,10 +1417,7 @@
             document.getElementById("statusModalTitle").innerText = `${isMeeting ? '📅 วาระประชุม' : '📋 รายละเอียดงาน'}`;
             let html = `
                 <div class="bg-emerald-50/80 border border-emerald-200 rounded-4 p-3 mb-3">
-                    <div class="d-flex gap-1 mb-1">
-                        <span class="badge-dept">🏥 ${task.targetDept === 'ALL' ? 'ทุกหน่วยงาน' : task.targetDept}</span>
-                        ${renderCareTypeBadge(task.targetCareType)}
-                    </div>
+                    <div class="d-flex flex-wrap gap-1 mb-1">${renderTargetBadges(task)}</div>
                     <h5 class="fw-bold mt-1 mb-1">${task.title}</h5>
                     <p class="text-slate-600 mb-2">${task.detail || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
                     <div class="text-rose-600 fw-bold">⏰ กำหนดเวลา: ${formatDateTimeThai(task.dueDate)}</div>
@@ -1605,10 +1716,7 @@
                 return `
                     <div class="task-glass-item">
                         <div class="d-flex justify-content-between flex-wrap gap-1 mb-1">
-                            <div class="d-flex gap-1">
-                                <span class="badge-dept">🏥 ${t.targetDept === 'ALL' ? 'ทุกหน่วยงาน' : t.targetDept}</span>
-                                ${renderCareTypeBadge(t.targetCareType)}
-                            </div>
+                            <div class="d-flex flex-wrap gap-1 justify-content-end">${renderTargetBadges(t)}</div>
                             ${sub ? `<span class="badge bg-success rounded-pill px-2.5">✅ ส่งเรียบร้อยแล้ว</span>` : `<span class="badge bg-danger rounded-pill px-2.5">⏳ รอส่งงาน</span>`}
                         </div>
                         <div class="fw-bold text-lg mt-1">${t.title}</div>
@@ -1627,33 +1735,165 @@
             }).join('');
         }
 
+        // ======================= รายชื่อหัวหน้าตึก (แยก OPD / IPD) =======================
         function renderMemberDirectory() {
             const careFilter = document.getElementById("filterDirCareType").value;
-            const filteredUsers = appData.users.filter(u => careFilter === "ALL" || u.careType === careFilter);
             const container = document.getElementById("memberDirectoryList");
-            if (filteredUsers.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-400 py-3">ยังไม่มีรายชื่อสมาชิกในกลุ่มนี้</div>`;
+            const users = (appData.users || []).filter(u => careFilter === "ALL" || (u.careType || "OPD") === careFilter);
+            if (users.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-400 py-3">ยังไม่มีรายชื่อในกลุ่มนี้</div>`;
                 return;
             }
-            container.innerHTML = filteredUsers.map(u => `
-                <div class="d-flex align-items-center justify-content-between py-2.5 border-b border-slate-200/70">
-                    <div class="d-flex align-items-center gap-2.5">
-                        <img src="${u.pictureUrl}" class="rounded-circle border" style="width:44px;height:44px;object-fit:cover;">
-                        <div>
-                            <div class="fw-bold">${u.fullName}</div>
-                            <div class="text-slate-500 text-xs">LINE: ${u.displayName}</div>
+            const sortFn = (a, b) => String(a.department || "").localeCompare(String(b.department || ""), 'th') ||
+                                     String(a.fullName || "").localeCompare(String(b.fullName || ""), 'th');
+            let html = "";
+            ["OPD", "IPD"].forEach(care => {
+                const list = users.filter(u => (u.careType || "OPD") === care).sort(sortFn);
+                if (!list.length) return;
+                html += `<div class="dir-group-title">${careLabel(care)} <span class="text-slate-400 fw-bold" style="font-size:.8rem;">${list.length} คน</span></div>`;
+                html += list.map(u => {
+                    const id = enc(u.userId);
+                    return `
+                    <div class="d-flex align-items-center justify-content-between gap-2 py-2.5 border-b border-slate-200/70">
+                        <div class="d-flex align-items-center gap-2.5 min-w-0" style="cursor:pointer;" onclick="viewMember('${id}')">
+                            <img src="${esc(u.pictureUrl || DEFAULT_AVATAR)}" onerror="this.src='${DEFAULT_AVATAR}'" class="rounded-circle border flex-shrink-0" style="width:44px;height:44px;object-fit:cover;">
+                            <div class="min-w-0">
+                                <div class="fw-bold text-truncate">${esc(u.fullName || u.displayName || '-')}</div>
+                                <span class="badge-dept">${esc(u.department || 'ยังไม่ระบุหน่วยงาน')}</span>
+                            </div>
                         </div>
+                        <div class="d-flex gap-1 flex-shrink-0">
+                            <button type="button" class="scifi-eye-btn sm" title="เปิดดู" onclick="viewMember('${id}')">${EYE_SVG}</button>
+                            <button type="button" class="mini-btn edit" title="แก้ไข" onclick="editMember('${id}')"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" class="mini-btn del" title="ลบ" onclick="deleteMember('${id}')"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>`;
+                }).join('');
+            });
+            container.innerHTML = html;
+        }
+
+        function findMember(encId) {
+            const id = decodeURIComponent(encId);
+            return (appData.users || []).find(u => u.userId === id) || null;
+        }
+
+        function viewMember(encId) {
+            const u = findMember(encId);
+            if (!u) return;
+            const subCount = (appData.submissions || []).filter(s => s.userId === u.userId).length;
+            Swal.fire({
+                html: `
+                    <img src="${esc(u.pictureUrl || DEFAULT_AVATAR)}" onerror="this.src='${DEFAULT_AVATAR}'" class="pp-avatar" alt="">
+                    <div class="pp-name">${esc(u.fullName || '-')}</div>
+                    <div class="d-flex justify-content-center gap-1 flex-wrap my-2">
+                        <span class="badge-dept">🏥 ${esc(u.department || '-')}</span>${renderCareTypeBadge(u.careType || 'OPD')}
                     </div>
-                    <div class="text-end">
-                        <div class="mb-1"><span class="badge-dept">${u.department}</span></div>
-                        ${renderCareTypeBadge(u.careType)}
+                    <div class="pp-info text-start">
+                        <div>💬 ชื่อใน LINE: ${esc(u.displayName || '-')}</div>
+                        <div>📤 ส่งงานแล้ว: ${subCount} รายการ</div>
+                        <div>🕒 ปรับปรุงข้อมูลล่าสุด: ${u.updatedAt ? formatDateTimeThai(u.updatedAt) : '-'}</div>
                     </div>
-                </div>
-            `).join('');
+                    <div class="d-flex gap-2 justify-content-center mt-3">
+                        <button class="btn btn-outline-primary rounded-pill px-3 fw-bold" onclick="editMember('${enc(u.userId)}')">✏️ แก้ไข</button>
+                        <button class="btn btn-outline-danger rounded-pill px-3 fw-bold" onclick="deleteMember('${enc(u.userId)}')">🗑️ ลบ</button>
+                    </div>`,
+                confirmButtonText: "ปิด",
+                confirmButtonColor: "#64748b"
+            });
+        }
+
+        function deptOptionsHtml(selected) {
+            const base = Array.from(document.getElementById("inputDepartment").options).map(o => o.value);
+            const all = Array.from(new Set(base.concat(getRegisteredDepts())));
+            return all.map(d => `<option value="${esc(d)}" ${d === selected ? 'selected' : ''}>${esc(d)}</option>`).join('');
+        }
+
+        async function editMember(encId) {
+            const u = findMember(encId);
+            if (!u) return;
+            const isSelf = u.userId === currentUser.userId && currentUser.isLineUser;
+            const r = await Swal.fire({
+                title: "✏️ แก้ไขข้อมูล",
+                html: `
+                    <div class="text-start">
+                        <label class="form-label fw-bold mb-1">👩‍⚕️ ชื่อ-นามสกุล</label>
+                        <input id="swEditName" class="form-control rounded-4 mb-2" value="${esc(u.fullName || '')}">
+                        <label class="form-label fw-bold mb-1">🏥 หน่วยงาน</label>
+                        <select id="swEditDept" class="form-select rounded-4 mb-2">${deptOptionsHtml(u.department)}</select>
+                        <label class="form-label fw-bold mb-1">🏷️ ประเภทบริการ</label>
+                        <select id="swEditCare" class="form-select rounded-4 mb-2">
+                            <option value="OPD" ${(u.careType || 'OPD') === 'OPD' ? 'selected' : ''}>🩺 OPD</option>
+                            <option value="IPD" ${u.careType === 'IPD' ? 'selected' : ''}>🛏️ IPD</option>
+                        </select>
+                        ${isSelf ? '' : `
+                        <label class="form-label fw-bold mb-1">🔒 รหัสผู้ดูแล</label>
+                        <input id="swEditPin" type="password" class="form-control rounded-4" autocomplete="off">`}
+                    </div>`,
+                showCancelButton: true,
+                confirmButtonText: "บันทึก",
+                cancelButtonText: "ยกเลิก",
+                confirmButtonColor: "#10b981",
+                preConfirm: () => {
+                    const name = document.getElementById("swEditName").value.trim();
+                    if (!name) { Swal.showValidationMessage("กรุณาระบุชื่อ-นามสกุล"); return false; }
+                    const pinEl = document.getElementById("swEditPin");
+                    if (pinEl && !pinEl.value) { Swal.showValidationMessage("กรุณากรอกรหัสผู้ดูแล"); return false; }
+                    return {
+                        fullName: name,
+                        department: document.getElementById("swEditDept").value,
+                        careType: document.getElementById("swEditCare").value,
+                        pin: pinEl ? pinEl.value : ""
+                    };
+                }
+            });
+            if (!r.isConfirmed || !r.value) return;
+
+            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const res = await postToGAS({
+                action: "adminUpdateUser",
+                pin: r.value.pin,
+                accessToken: isSelf ? getLineAccessToken() : "",
+                user: { userId: u.userId, fullName: r.value.fullName, department: r.value.department, careType: r.value.careType }
+            });
+            if (res.status === "error") { Swal.fire("แก้ไขไม่สำเร็จ", res.message, "error"); return; }
+            await loadAllData();
+            Swal.fire("บันทึกแล้ว", "แก้ไขข้อมูลเรียบร้อย", "success");
+        }
+
+        async function deleteMember(encId) {
+            const u = findMember(encId);
+            if (!u) return;
+            const isSelf = u.userId === currentUser.userId && currentUser.isLineUser;
+            const r = await Swal.fire({
+                title: "🗑️ ลบรายชื่อ",
+                html: `<p class="mb-2">ลบ <b>${esc(u.fullName || u.displayName || '-')}</b> ออกจากรายชื่อหัวหน้าตึก?<br><span class="text-sm text-slate-500">งานที่เคยส่งไว้จะยังอยู่ในระบบ</span></p>
+                       ${isSelf ? '' : `<input id="swDelPin" type="password" class="form-control rounded-4" placeholder="รหัสผู้ดูแล" autocomplete="off">`}`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "ลบรายชื่อ",
+                cancelButtonText: "ยกเลิก",
+                confirmButtonColor: "#ef4444",
+                preConfirm: () => {
+                    const pinEl = document.getElementById("swDelPin");
+                    if (pinEl && !pinEl.value) { Swal.showValidationMessage("กรุณากรอกรหัสผู้ดูแล"); return false; }
+                    return { pin: pinEl ? pinEl.value : "" };
+                }
+            });
+            if (!r.isConfirmed || !r.value) return;
+
+            Swal.fire({ title: 'กำลังลบ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const res = await postToGAS({ action: "adminDeleteUser", userId: u.userId, pin: r.value.pin, accessToken: isSelf ? getLineAccessToken() : "" });
+            if (res.status === "error") { Swal.fire("ลบไม่สำเร็จ", res.message, "error"); return; }
+            await loadAllData();
+            Swal.fire("ลบแล้ว", "ลบรายชื่อออกจากระบบเรียบร้อย", "success");
         }
 
         function openCreateTaskModal() {
+            renderTargetPicker();
             updateTargetUsersPreview();
+            document.getElementById("targetPanel").classList.add("d-none");
+            document.getElementById("targetChevron").style.transform = "";
             showModal('createTaskModal');
         }
         function openAddMeetingModal() { showModal('addMeetingModal'); }
@@ -1717,37 +1957,89 @@
                 return;
             }
 
-            Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             const fileInput = document.getElementById("taskAttachmentFile");
-            let fileData = fileInput.files.length > 0 ? await readFileAsBase64(fileInput.files[0]) : null;
+            if (fileInput.files.length > 0 && !checkFileSize(fileInput.files[0])) return;
 
+            Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            let fileData = null;
+            try {
+                fileData = fileInput.files.length > 0 ? await prepareUpload(fileInput.files[0]) : null;
+            } catch (e) {
+                Swal.fire("อ่านไฟล์ไม่สำเร็จ", "กรุณาเลือกไฟล์ใหม่อีกครั้ง", "error");
+                return;
+            }
+
+            const sel = selectedTargets;
             const payload = {
                 action: "createTask",
                 task: {
                     type: document.getElementById("taskType").value,
                     title: title,
                     detail: document.getElementById("taskDetail").value.trim(),
-                    targetDept: document.getElementById("taskTargetDept").value,
-                    targetCareType: document.getElementById("taskTargetCareType").value,
+                    targets: targetsToString(sel),
+                    // เก็บไว้อ่านง่ายในชีต (ระบบใช้คอลัมน์ Targets เป็นหลัก)
+                    targetDept: sel.all ? "ALL" : sel.depts.join(", "),
+                    targetCareType: sel.all ? "ALL" : sel.cares.join(", "),
                     assignee: "ALL_IN_GROUP",
                     dueDate: dueDate,
-                    createdBy: currentUser.fullName
+                    createdBy: currentUser.fullName || currentUser.displayName
                 },
                 file: fileData
             };
 
             const res = await postToGAS(payload);
-            Swal.close();
             if (res.status === "error") {
-                Swal.fire("เกิดข้อผิดพลาด", res.message, "error");
+                Swal.fire("บันทึกไม่สำเร็จ", res.message, "error");
+                return;
+            }
+            await loadAllData();
+            if (res.status === "unknown" && !appData.tasks.some(t => t.title === title && String(t.dueDate).startsWith(dueDate.slice(0, 10)))) {
+                Swal.fire("ยังไม่พบข้อมูลที่บันทึก", "ระบบยังไม่ได้รับข้อมูล กรุณาลองใหม่อีกครั้ง", "error");
                 return;
             }
             hideModal('createTaskModal');
             document.getElementById("taskTitle").value = "";
             document.getElementById("taskDetail").value = "";
             document.getElementById("taskAttachmentFile").value = "";
-            await loadAllData();
-            Swal.fire("สำเร็จ", "บันทึกข้อมูลลงชีตและปฏิทินเรียบร้อยแล้ว", "success");
+            selectedTargets = { all: true, cares: [], depts: [] };
+            renderTargetPicker();
+            updateTargetUsersPreview();
+            Swal.fire("สำเร็จ", "บันทึกข้อมูลลงชีตและปฏิทินเรียบร้อยแล้ว และส่งแจ้งเตือนเข้า LINE แล้ว", "success");
+        }
+
+        function checkFileSize(file) {
+            if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+                Swal.fire("ไฟล์ใหญ่เกินไป", `ขนาดไฟล์ต้องไม่เกิน ${MAX_UPLOAD_MB} MB (ไฟล์นี้ ${(file.size / 1048576).toFixed(1)} MB)`, "warning");
+                return false;
+            }
+            return true;
+        }
+
+        // รูปภาพขนาดใหญ่จะถูกย่อก่อนส่ง เพื่อให้ส่งผ่าน LINE บนมือถือได้เสถียร (ไฟล์อื่นส่งตามเดิม)
+        async function prepareUpload(file) {
+            if (/^image\/(jpeg|png|webp)$/i.test(file.type) && file.size > 1.5 * 1024 * 1024) {
+                try { return await compressImage(file, 1800, 0.82); } catch (e) { /* ย่อไม่ได้ ส่งไฟล์เดิม */ }
+            }
+            return readFileAsBase64(file);
+        }
+
+        function compressImage(file, maxSide, quality) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => {
+                    const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+                    const canvas = document.createElement("canvas");
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(url);
+                    const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                    resolve({ fileName: file.name.replace(/\.(png|webp|jpe?g)$/i, "") + ".jpg", mimeType: "image/jpeg", base64: dataUrl.split(",")[1] });
+                };
+                img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+                img.src = url;
+            });
         }
 
         async function confirmSubmitWork() {
@@ -1777,7 +2069,7 @@
             Swal.fire({ title: 'กำลังอัปโหลดไฟล์ส่งงาน...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             let fileData;
             try {
-                fileData = await readFileAsBase64(file);
+                fileData = await prepareUpload(file);
             } catch (e) {
                 Swal.fire("อ่านไฟล์ไม่สำเร็จ", "กรุณาเลือกไฟล์ใหม่อีกครั้ง", "error");
                 return;
@@ -1835,41 +2127,54 @@
                 return;
             }
 
-            Swal.fire({ title: 'กำลังบันทึกการประชุม...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             const fileInput = document.getElementById("meetFile");
-            let fileData = fileInput.files.length > 0 ? await readFileAsBase64(fileInput.files[0]) : null;
+            if (fileInput.files.length > 0 && !checkFileSize(fileInput.files[0])) return;
+
+            Swal.fire({ title: 'กำลังบันทึกการประชุม...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            let fileData = null;
+            try {
+                fileData = fileInput.files.length > 0 ? await prepareUpload(fileInput.files[0]) : null;
+            } catch (e) {
+                Swal.fire("อ่านไฟล์ไม่สำเร็จ", "กรุณาเลือกไฟล์ใหม่อีกครั้ง", "error");
+                return;
+            }
 
             const payload = {
                 action: "addMeeting",
                 meeting: {
                     meetingDate: meetDate,
                     title: meetTitle,
-                    createdBy: currentUser.fullName,
+                    createdBy: currentUser.fullName || currentUser.displayName,
                     senderPictureUrl: currentUser.pictureUrl
                 },
                 file: fileData
             };
 
             const res = await postToGAS(payload);
-            Swal.close();
             if (res.status === "error") {
                 Swal.fire("บันทึกไม่สำเร็จ", res.message, "error");
+                return;
+            }
+
+            // ตรวจซ้ำจากชีตจริงว่าบันทึกแล้ว
+            document.getElementById("filterMeetingMonthYear").value = "";
+            await loadAllData();
+            const saved = (appData.meetings || []).find(m => (res.meetingId && m.meetingId === res.meetingId) ||
+                (m.title === meetTitle && String(m.meetingDate).startsWith(meetDate.slice(0, 10))));
+            if (!saved) {
+                Swal.fire("ยังไม่พบข้อมูลการประชุม", "ระบบยังไม่ได้รับข้อมูล กรุณาลองบันทึกใหม่อีกครั้ง หากยังไม่ได้ให้แจ้งผู้ดูแลระบบ", "error");
                 return;
             }
 
             hideModal('addMeetingModal');
             document.getElementById("meetTitle").value = "";
             document.getElementById("meetFile").value = "";
-
-            document.getElementById("filterMeetingMonthYear").value = "";
-            await loadAllData();
             switchTab('tab-meetings');
 
             Swal.fire({
                 title: "บันทึกสำเร็จ 🎉",
-                html: res.fileUrl
-                    ? `บันทึกลงตารางและส่งการ์ด Flex พร้อมรูปโปรไฟล์เข้ากลุ่ม LINE แล้ว<br><button onclick="openDriveFile(decodeURIComponent('${enc(res.fileUrl)}'))" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>`
-                    : "บันทึกลงตารางเรียบร้อยแล้ว",
+                html: `บันทึกลงตารางและส่งการ์ด Flex เข้า LINE แล้ว
+                    ${saved.fileUrl ? `<br><button onclick="openDriveFile(decodeURIComponent('${enc(saved.fileUrl)}'))" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>` : ''}`,
                 icon: "success",
                 confirmButtonColor: "#10b981"
             });
