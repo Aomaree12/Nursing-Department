@@ -31,6 +31,10 @@
             --glass-border: rgba(255, 255, 255, 0.65);
         }
         * { font-family: 'Sarabun', 'TH Sarabun New', sans-serif !important; }
+        /* คืนฟอนต์ไอคอน (เดิมถูกฟอนต์ไทยทับ จึงแสดงเป็นสี่เหลี่ยม) */
+        .fa, .fa-solid, .fas { font-family: "Font Awesome 6 Free" !important; font-weight: 900 !important; }
+        .fa-regular, .far { font-family: "Font Awesome 6 Free" !important; font-weight: 400 !important; }
+        .fa-brands, .fab { font-family: "Font Awesome 6 Brands" !important; font-weight: 400 !important; }
         body {
             background: linear-gradient(135deg, #e0f7ef 0%, #f0fdf4 45%, #e6f4f1 100%);
             background-attachment: fixed;
@@ -261,6 +265,66 @@
         .tab-pane-section.active { display: block; animation: fadeIn 0.2s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .modal-content { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-radius: 26px !important; }
+
+        /* ปุ่มรูปตาแนวไซไฟ โปร่งแสง */
+        .scifi-eye-btn {
+            width: 38px; height: 38px; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #0e7490; padding: 0; position: relative; overflow: hidden;
+            background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(165,243,252,0.38) 46%, rgba(16,185,129,0.16) 100%);
+            border: 1px solid rgba(34, 211, 238, 0.6);
+            box-shadow: 0 0 0 3px rgba(34,211,238,0.10), 0 0 14px rgba(34,211,238,0.45), inset 0 0 9px rgba(255,255,255,0.75);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            transition: transform .15s ease, box-shadow .2s ease;
+        }
+        .scifi-eye-btn svg { width: 20px; height: 20px; filter: drop-shadow(0 0 3px rgba(34,211,238,0.95)); position: relative; z-index: 1; }
+        .scifi-eye-btn::before {
+            content: ''; position: absolute; inset: 4px; border-radius: 50%;
+            border: 1px dashed rgba(14,116,144,0.35); animation: eyeOrbit 9s linear infinite;
+        }
+        .scifi-eye-btn::after {
+            content: ''; position: absolute; inset: 0; border-radius: 50%;
+            background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.8) 50%, transparent 65%);
+            transform: translateX(-120%); animation: eyeScan 3.4s ease-in-out infinite;
+        }
+        .scifi-eye-btn .eye-core { animation: eyePulse 2.4s ease-in-out infinite; }
+        .scifi-eye-btn:hover { box-shadow: 0 0 0 4px rgba(34,211,238,0.16), 0 0 20px rgba(34,211,238,0.7), inset 0 0 9px rgba(255,255,255,0.8); }
+        .scifi-eye-btn:active { transform: scale(0.92); }
+        @keyframes eyeScan { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+        @keyframes eyeOrbit { to { transform: rotate(360deg); } }
+        @keyframes eyePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+        /* แถบรูปผู้ส่งงาน / ผู้เปิดอ่าน */
+        .sub-strip-title { font-size: 0.85rem; font-weight: 800; }
+        .sub-group { margin-top: 6px; }
+        .sub-group-label { font-size: 0.78rem; font-weight: 800; color: #475569; display: flex; align-items: center; gap: 6px; }
+        .sub-group-label .cnt { font-weight: 700; color: #94a3b8; }
+        .sub-av-row { display: flex; flex-wrap: wrap; gap: 10px 9px; padding-top: 8px; }
+        .sub-av { position: relative; width: 36px; height: 36px; padding: 0; border: none; background: none; border-radius: 50%; flex-shrink: 0; }
+        .sub-av img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 0 0 1.5px rgba(16,185,129,0.55), 0 3px 8px rgba(0,0,0,0.12); background: #fff; }
+        .sub-av.top1 img { box-shadow: 0 0 0 2px #f59e0b, 0 0 10px rgba(245,158,11,0.55); }
+        .sub-av.reader img { box-shadow: 0 0 0 1.5px rgba(245,158,11,0.65), 0 3px 8px rgba(0,0,0,0.12); }
+        .sub-av:active { transform: scale(0.92); }
+        .rank-sup {
+            position: absolute; top: -8px; right: -10px; z-index: 2;
+            font-size: 10px; line-height: 1; font-weight: 800; color: #fff;
+            padding: 2px 4px; border-radius: 8px; border: 1.5px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); vertical-align: baseline;
+        }
+        .rank-sup small { font-size: 7.5px; font-weight: 800; margin-left: 0.5px; vertical-align: top; }
+        .rank-sup.r1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .rank-sup.r2 { background: linear-gradient(135deg, #cbd5e1, #94a3b8); }
+        .rank-sup.r3 { background: linear-gradient(135deg, #f0a36b, #c2410c); }
+
+        /* หน้าต่างดูรายละเอียดบุคคล */
+        .pp-avatar { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 3px rgba(16,185,129,0.45), 0 8px 20px rgba(0,0,0,0.15); margin: 4px auto 10px auto; display: block; }
+        .pp-name { font-weight: 800; font-size: 1.2rem; color: #0f172a; }
+        .pp-info { background: rgba(241,245,249,0.85); border-radius: 16px; padding: 10px 12px; font-size: 0.92rem; color: #334155; line-height: 1.7; }
+        .pp-rank { display: inline-block; font-weight: 800; font-size: 0.85rem; color: #92400e; background: #fef3c7; border-radius: 12px; padding: 2px 10px; margin-bottom: 8px; }
+
+        /* กล่องข้อมูลผู้ส่งในหน้าต่างส่งงาน */
+        .submitter-card { background: rgba(239, 246, 255, 0.9); border: 1px solid #bfdbfe; border-radius: 20px; padding: 10px 12px; }
+        .submitter-card img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.45); flex-shrink: 0; background: #fff; }
     </style>
 </head>
 <body>
@@ -271,9 +335,9 @@
             <div class="d-flex align-items-center gap-3">
                 <img id="headerAvatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="profile-avatar" alt="Profile">
                 <div class="flex-grow-1 min-w-0">
-                    <div class="fw-bold text-xl leading-tight text-truncate" id="headerName">กำลังโหลด...</div>
-                    <div class="mt-1">
-                        <span class="badge bg-white/95 text-emerald-800 rounded-pill px-2.5 py-0.5 text-xs fw-bold" id="headerDeptBadge">🏥 ระบุหน่วยงาน...</span>
+                    <div class="d-flex align-items-center gap-2 min-w-0">
+                        <div class="fw-bold text-xl leading-tight text-truncate flex-shrink-0" style="max-width: 48%;" id="headerName">กำลังโหลด...</div>
+                        <span class="badge bg-white/95 text-emerald-800 rounded-pill px-2.5 py-0.5 text-xs fw-bold text-truncate" style="min-width: 0;" id="headerDeptBadge">🏥 ระบุหน่วยงาน...</span>
                     </div>
                     <div class="text-xs opacity-95 mt-1 fw-medium text-truncate" id="currentDateText"></div>
                 </div>
@@ -571,7 +635,23 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="submitTaskId">
-                    <div class="fw-bold text-lg mb-1" id="submitTaskTitleDisplay"></div>
+
+                    <!-- ข้อมูลผู้ส่ง (ดึงจากโปรไฟล์เดิม) -->
+                    <div class="submitter-card d-flex align-items-center gap-3 mb-2">
+                        <img id="submitterAvatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="">
+                        <div class="min-w-0">
+                            <div class="text-xs text-blue-700 fw-bold">ผู้ส่งงาน</div>
+                            <div class="fw-bold text-lg leading-tight text-truncate" id="submitterName">-</div>
+                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                <span class="badge-dept" id="submitterDept">-</span>
+                                <span id="submitterCare"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="submitterWarn" class="alert alert-warning rounded-4 py-2 px-3 small mb-2 d-none"></div>
+                    <div id="submitExistingInfo" class="alert alert-success rounded-4 py-2 px-3 small mb-2 d-none"></div>
+
+                    <div class="fw-bold text-lg mb-1 mt-2" id="submitTaskTitleDisplay"></div>
                     <div class="text-slate-500 mb-3" id="submitTaskDetailDisplay"></div>
                     <div class="mb-3">
                         <label class="form-label fw-bold mb-1">📎 เลือกไฟล์งานที่ต้องการส่ง *</label>
@@ -605,7 +685,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold mb-1">📝 หัวข้อการประชุม *</label>
-                        <input type="text" id="meetTitle" class="form-control rounded-4" placeholder="เช่น ประชุมประจำเดือนหน่วยไตเทียม ครั้งที่ 11/2569">
+                        <input type="text" id="meetTitle" class="form-control rounded-4">
                     </div>
                     <div class="mb-2">
                         <label class="form-label fw-bold mb-1">📎 แนบไฟล์วาระ / รายงานการประชุม (PDF / Word)</label>
@@ -650,13 +730,70 @@
                 return id;
             })()),
             displayName: "สมาชิกหน่วยงาน",
-            fullName: localStorage.getItem("user_fullName") || "พว.อ้อมอารีย์ พุทธาวันดี",
-            department: localStorage.getItem("user_department") || "หน่วยไตเทียม",
+            fullName: localStorage.getItem("user_fullName") || "",
+            department: localStorage.getItem("user_department") || "",
             careType: localStorage.getItem("user_careType") || "OPD",
-            pictureUrl: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            pictureUrl: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+            isLineUser: false
         };
 
-        let appData = { users: [], tasks: [], submissions: [], meetings: [] };
+        const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+        const MAX_UPLOAD_MB = 25;
+        const EYE_SVG = `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M1.6 12S5.6 4.6 12 4.6 22.4 12 22.4 12 18.4 19.4 12 19.4 1.6 12 1.6 12Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="3.7" stroke="currentColor" stroke-width="1.6"/>
+            <circle class="eye-core" cx="12" cy="12" r="1.5" fill="currentColor"/>
+            <path d="M12 2.2v1.4M12 20.4v1.4M3.2 12H1.8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".55"/>
+        </svg>`;
+
+        let appData = { users: [], tasks: [], submissions: [], meetings: [], reads: [] };
+
+        // ---------- ตัวช่วยทั่วไป ----------
+        function esc(s) {
+            return String(s === undefined || s === null ? "" : s)
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+        // เข้ารหัสค่าสำหรับใส่ใน onclick='...' อย่างปลอดภัย
+        function enc(s) { return encodeURIComponent(String(s === undefined || s === null ? "" : s)).replace(/'/g, "%27"); }
+        function timeOf(v) { const d = parseFlexibleDate(v); return d ? d.getTime() : 0; }
+        function showModal(id) {
+            const el = document.getElementById(id);
+            bootstrap.Modal.getOrCreateInstance(el, { focus: false }).show();
+        }
+        function hideModal(id) {
+            const inst = bootstrap.Modal.getInstance(document.getElementById(id));
+            if (inst) inst.hide();
+        }
+        function driveId(url) {
+            const s = String(url || "");
+            const m = s.match(/\/d\/([-\w]{20,})/) || s.match(/[?&]id=([-\w]{20,})/);
+            return m ? m[1] : "";
+        }
+        function driveViewUrl(url) {
+            const id = driveId(url);
+            return (id && /drive\.google\.com/i.test(url)) ? `https://drive.google.com/file/d/${id}/view` : url;
+        }
+        function driveDownloadUrl(url) {
+            const id = driveId(url);
+            return (id && /drive\.google\.com/i.test(url)) ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+        }
+        function careKey(c) { return c === "IPD" ? "IPD" : (c === "OPD" || !c ? "OPD" : "OTHER"); }
+        function careLabel(k) { return k === "IPD" ? "🛏️ IPD" : k === "OPD" ? "🩺 OPD" : "📌 อื่นๆ"; }
+        function getRegisteredUser() { return (appData.users || []).find(u => u.userId === currentUser.userId) || null; }
+        function getLineAccessToken() {
+            try { return (typeof liff !== "undefined" && liff.getAccessToken && liff.getAccessToken()) || ""; } catch (e) { return ""; }
+        }
+        function userInfo(userId, snap) {
+            const u = (appData.users || []).find(x => x.userId === userId) || {};
+            snap = snap || {};
+            return {
+                pic: u.pictureUrl || snap.pictureUrl || DEFAULT_AVATAR,
+                name: u.fullName || snap.fullName || u.displayName || "สมาชิก",
+                dept: snap.department || u.department || "",
+                care: snap.careType || u.careType || "OPD"
+            };
+        }
         let meetingsTableInstance = null;
         let calendarInstance = null;
 
@@ -681,7 +818,8 @@
 
         function openDriveFile(url) {
             if (!url || url === "#") return;
-            if (typeof liff !== "undefined" && liff.isInClient()) {
+            if (!/\/uc\?/.test(url)) url = driveViewUrl(url); // ลิงก์ดาวน์โหลดตรงไม่ต้องแปลง
+            if (typeof liff !== "undefined" && liff.isInClient && liff.isInClient()) {
                 liff.openWindow({ url: url, external: true });
             } else {
                 window.open(url, "_blank");
@@ -701,12 +839,13 @@
                 try {
                     return JSON.parse(text);
                 } catch (e) {
-                    return { status: "success" };
+                    // หลังบ้านตอบกลับเป็นหน้าเว็บแทนข้อมูล เช่น ยังไม่อนุญาตสิทธิ์ หรือยังไม่ได้ทำให้ใช้งานได้เวอร์ชันใหม่
+                    return { status: "error", message: "ระบบหลังบ้านตอบกลับไม่ถูกต้อง กรุณาแจ้งผู้ดูแลให้ตรวจการอนุญาตสิทธิ์และการทำให้ใช้งานได้ของ Apps Script" };
                 }
             } catch (err) {
-                // กรณีบราวเซอร์บล็อกการอ่าน Response หลัง 302 Redirect (แต่หลังบ้านรันเสร็จแล้ว)
+                // กรณีบราวเซอร์บล็อกการอ่านคำตอบหลังการส่งต่อ 302 (หลังบ้านอาจรันเสร็จแล้ว) — ผู้เรียกต้องตรวจผลซ้ำ
                 await new Promise(r => setTimeout(r, 1500));
-                return { status: "success", fallback: true };
+                return { status: "unknown", fallback: true };
             }
         }
 
@@ -728,6 +867,7 @@
                 currentUser.userId = profile.userId;
                 currentUser.displayName = profile.displayName;
                 currentUser.pictureUrl = profile.pictureUrl || currentUser.pictureUrl;
+                currentUser.isLineUser = true;
                 updateProfileUI();
             } catch (err) {
                 updateProfileUI();
@@ -760,12 +900,13 @@
                 const res = await fetch(`${GAS_WEB_APP_URL}?action=getAllData&userId=${encodeURIComponent(currentUser.userId)}&t=${Date.now()}`);
                 const json = await res.json();
                 if (json.status === "success") {
-                    appData = json.data;
+                    appData = Object.assign({ users: [], tasks: [], submissions: [], meetings: [], reads: [] }, json.data || {});
                     const foundUser = appData.users.find(u => u.userId === currentUser.userId);
                     if (foundUser) {
                         currentUser.fullName = foundUser.fullName;
                         currentUser.department = foundUser.department;
                         currentUser.careType = foundUser.careType || "OPD";
+                        if (!currentUser.isLineUser && foundUser.pictureUrl) currentUser.pictureUrl = foundUser.pictureUrl;
                         updateProfileUI();
                     }
                     renderAllViews();
@@ -937,6 +1078,7 @@
                         </div>
                         <div class="fw-bold text-lg mt-1 text-slate-800">${t.title}</div>
                         <div class="text-slate-600 mb-2">${t.detail || '-'}</div>
+                        <div class="mb-2">${isMeeting ? renderReaderStrip(t) : renderSubmitterStrip(t)}</div>
                         <div class="d-flex justify-content-between align-items-center pt-2 border-t border-slate-200/70">
                             <span class="text-rose-600 fw-bold text-sm">⏰ ${formatDateTimeThai(t.dueDate)}</span>
                             <div class="d-flex gap-1.5">
@@ -1029,7 +1171,7 @@
             });
 
             dayMeets.forEach(m => {
-                const safeJson = encodeURIComponent(JSON.stringify(m));
+                const safeJson = enc(JSON.stringify(m));
                 html += `
                     <div class="border border-blue-200 rounded-4 p-3 mb-2 bg-blue-50/60">
                         <span class="badge bg-primary mb-1">📘 บันทึกการประชุม</span>
@@ -1041,32 +1183,38 @@
             });
 
             document.getElementById("statusModalBody").innerHTML = html;
-            new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
+            showModal('submissionStatusModal');
         }
 
         function showMeetingRecordModal(m) {
+            // ใช้ข้อมูลล่าสุดจากชีตเสมอ (กันกรณีข้อมูลในปฏิทิน/ตารางค้างเก่า)
+            const latest = (appData.meetings || []).find(x => x.meetingId === m.meetingId);
+            if (latest) m = latest;
             document.getElementById("statusModalTitle").innerText = "📘 รายละเอียดบันทึกการประชุม";
-            const safeTitle = String(m.title || "").replace(/'/g, "\\'");
+            const hasFile = /^https?:\/\//i.test(String(m.fileUrl || ""));
 
             document.getElementById("statusModalBody").innerHTML = `
                 <div class="bg-blue-50/70 border border-blue-200 rounded-4 p-3 mb-3">
                     <div class="text-xs text-primary fw-bold mb-1">📅 วันที่ประชุม: ${formatDateTimeThai(m.meetingDate)}</div>
-                    <h5 class="fw-bold text-slate-800 mb-2">${m.title || '-'}</h5>
-                    <div class="text-sm text-slate-600">👤 ผู้บันทึก: ${m.createdBy || '-'}</div>
+                    <h5 class="fw-bold text-slate-800 mb-2">${esc(m.title || '-')}</h5>
+                    <div class="text-sm text-slate-600">👤 ผู้บันทึก: ${esc(m.createdBy || '-')}</div>
+                    ${hasFile ? `<div class="text-sm text-slate-600 mt-1">📎 ไฟล์: ${esc(m.fileName || 'ไฟล์วาระ / รายงานการประชุม')}</div>` : ''}
                 </div>
                 <div class="d-grid gap-2">
-                    ${m.fileUrl
-                        ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-success rounded-pill py-2 fw-bold">📎 เปิดไฟล์วาระ / รายงานการประชุม</button>`
+                    ${hasFile
+                        ? `<button onclick="openDriveFile(decodeURIComponent('${enc(m.fileUrl)}'))" class="btn btn-success rounded-pill py-2 fw-bold">📂 เปิดไฟล์วาระ / รายงานการประชุม</button>
+                           <button onclick="openDriveFile(decodeURIComponent('${enc(driveDownloadUrl(m.fileUrl))}'))" class="btn btn-outline-success rounded-pill py-2 fw-bold">⬇️ ดาวน์โหลดไฟล์</button>`
                         : `<div class="text-center text-slate-400 py-2 border rounded-4">ไม่มีไฟล์แนบในรายการนี้</div>`}
-                    <button onclick="promptDeleteMeeting('${m.meetingId}', '${safeTitle}')" class="btn btn-outline-danger rounded-pill py-2 fw-bold mt-2">
+                    <button onclick="promptDeleteMeeting(decodeURIComponent('${enc(m.meetingId)}'), decodeURIComponent('${enc(m.title || '')}'))" class="btn btn-outline-danger rounded-pill py-2 fw-bold mt-2">
                         <i class="fa-solid fa-trash-can me-1"></i> ลบบันทึกการประชุมนี้
                     </button>
                 </div>
             `;
-            new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
+            showModal('submissionStatusModal');
         }
 
         function promptDeleteMeeting(meetingId, title) {
+            title = esc(title);
             Swal.fire({
                 title: '🗑️ ยืนยันการลบบันทึกการประชุม',
                 html: `<p class="text-sm text-slate-600 mb-2">เรื่อง: <b>${title}</b><br>กรุณากรอกรหัสผ่านเพื่อยืนยันการลบ</p>`,
@@ -1119,19 +1267,6 @@
             }
 
             container.innerHTML = filtered.map(t => {
-                const targetUsers = appData.users.filter(u => isUserTargeted(t, u));
-                const taskSubs = appData.submissions.filter(s => s.taskId === t.taskId);
-
-                const submittedAvatarsHtml = taskSubs.map(s => {
-                    const u = appData.users.find(user => user.userId === s.userId) || { pictureUrl: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png', fullName: s.fullName };
-                    return `
-                        <span onclick="openDriveFile('${s.fileUrl}')" class="avatar-chip" title="คลิกเปิดไฟล์ของ ${u.fullName}">
-                            <img src="${u.pictureUrl}">
-                            <span>${u.fullName.split(' ')[0]}</span>
-                        </span>
-                    `;
-                }).join('');
-
                 return `
                     <div class="task-glass-item ${t.type === 'ประชุม' ? 'meeting' : ''}">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-1 mb-1">
@@ -1145,17 +1280,10 @@
                         <div class="text-slate-600 mb-2">${t.detail || '-'}</div>
                         <div class="text-rose-600 fw-bold text-sm mb-2">⏰ กำหนด: ${formatDateTimeThai(t.dueDate)}</div>
 
-                        ${t.type === 'งาน' ? `
-                            <div class="mb-2">
-                                <div class="fw-bold text-emerald-700 text-sm mb-1">✅ ผู้ที่ส่งไฟล์แล้ว (${taskSubs.length}/${targetUsers.length} คน):</div>
-                                <div class="d-flex flex-wrap gap-1.5">
-                                    ${submittedAvatarsHtml || '<span class="text-slate-400 text-sm">ยังไม่มีผู้ส่งงาน</span>'}
-                                </div>
-                            </div>
-                        ` : ''}
+                        <div class="mb-2">${t.type === 'ประชุม' ? renderReaderStrip(t) : renderSubmitterStrip(t)}</div>
 
                         <div class="d-flex justify-content-end gap-1.5 pt-2 border-t border-slate-200/70">
-                            ${t.attachmentUrl ? `<button onclick="openDriveFile('${t.attachmentUrl}')" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📎 ไฟล์คำสั่ง</button>` : ''}
+                            ${t.attachmentUrl ? `<button onclick="openDriveFile(decodeURIComponent('${enc(t.attachmentUrl)}'))" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📎 ไฟล์คำสั่ง</button>` : ''}
                             <button class="btn btn-sm btn-success rounded-pill px-3 fw-bold" onclick="viewSubmissionDetails('${t.taskId}')">🔍 ดูรายละเอียด & เช็กทุกคน</button>
                         </div>
                     </div>
@@ -1166,10 +1294,13 @@
         function viewSubmissionDetails(taskId) {
             const task = appData.tasks.find(t => t.taskId === taskId);
             if (!task) return;
+            const isMeeting = task.type === 'ประชุม';
+            if (isMeeting) markTaskRead(task);
             const targetUsers = appData.users.filter(u => isUserTargeted(task, u));
             const taskSubs = appData.submissions.filter(s => s.taskId === taskId);
+            const taskReads = getTaskReads(taskId);
 
-            document.getElementById("statusModalTitle").innerText = `${task.type === 'ประชุม' ? '📅 วาระประชุม' : '📋 รายละเอียดงาน'}`;
+            document.getElementById("statusModalTitle").innerText = `${isMeeting ? '📅 วาระประชุม' : '📋 รายละเอียดงาน'}`;
             let html = `
                 <div class="bg-emerald-50/80 border border-emerald-200 rounded-4 p-3 mb-3">
                     <div class="d-flex gap-1 mb-1">
@@ -1179,18 +1310,20 @@
                     <h5 class="fw-bold mt-1 mb-1">${task.title}</h5>
                     <p class="text-slate-600 mb-2">${task.detail || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
                     <div class="text-rose-600 fw-bold">⏰ กำหนดเวลา: ${formatDateTimeThai(task.dueDate)}</div>
-                    ${task.attachmentUrl ? `<button onclick="openDriveFile('${task.attachmentUrl}')" class="btn btn-sm btn-outline-dark rounded-pill mt-2 px-3 fw-bold">📎 เปิดไฟล์คำสั่ง/วาระประชุม</button>` : ''}
+                    ${task.attachmentUrl ? `<button onclick="openDriveFile(decodeURIComponent('${enc(task.attachmentUrl)}'))" class="btn btn-sm btn-outline-dark rounded-pill mt-2 px-3 fw-bold">📎 เปิดไฟล์คำสั่ง/วาระประชุม</button>` : ''}
                 </div>
-                <h6 class="fw-bold mb-2">👥 รายชื่อผู้รับผิดชอบ (${taskSubs.length}/${targetUsers.length} คนส่งแล้ว)</h6>
+                <div class="mb-3">${isMeeting ? renderReaderStrip(task) : renderSubmitterStrip(task)}</div>
+                <h6 class="fw-bold mb-2">👥 รายชื่อผู้รับผิดชอบ (${isMeeting ? `เปิดอ่านแล้ว ${targetUsers.filter(u => taskReads.some(r => r.userId === u.userId)).length}/${targetUsers.length} คน` : `${taskSubs.length}/${targetUsers.length} คนส่งแล้ว`})</h6>
                 <div class="list-group list-group-flush">
             `;
 
             targetUsers.forEach(u => {
                 const sub = taskSubs.find(s => s.userId === u.userId);
+                const read = taskReads.find(r => r.userId === u.userId);
                 html += `
                     <div class="list-group-item bg-transparent px-0 py-2 d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center gap-2">
-                            <img src="${u.pictureUrl}" class="rounded-circle border" style="width:42px;height:42px;object-fit:cover;">
+                            <img src="${esc(u.pictureUrl || DEFAULT_AVATAR)}" onerror="this.src='${DEFAULT_AVATAR}'" class="rounded-circle border" style="width:42px;height:42px;object-fit:cover;${sub ? 'cursor:pointer;' : ''}" ${sub ? `onclick="showSubmissionPerson('${enc(sub.subId)}')"` : ''}>
                             <div>
                                 <div class="fw-bold">${u.fullName}</div>
                                 <div class="d-flex gap-1">
@@ -1200,9 +1333,12 @@
                             </div>
                         </div>
                         <div class="text-end">
-                            ${task.type === 'ประชุม' ? `<span class="badge bg-info-subtle text-info px-2.5 py-1">รับทราบวาระ</span>` : (sub ? `
+                            ${isMeeting ? (read
+                                ? `<span class="badge rounded-pill px-2.5 py-1 mb-1" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;">👁️ อ่านแล้ว</span>
+                                   <div class="text-xs" style="color:#64748b;white-space:nowrap;">${formatDateTimeThai(read.readAt)}</div>`
+                                : `<span class="badge rounded-pill px-2.5 py-1" style="background:#f1f5f9;color:#64748b;white-space:nowrap;">ยังไม่เปิดอ่าน</span>`) : (sub ? `
                                 <span class="badge bg-success mb-1 d-block">✅ ส่งแล้ว (${formatDateTimeThai(sub.submittedAt)})</span>
-                                <button onclick="openDriveFile('${sub.fileUrl}')" class="btn btn-sm btn-outline-primary py-0 px-2.5 rounded-pill fw-bold">📎 เปิดไฟล์แนบ</button>
+                                <button onclick="showSubmissionPerson('${enc(sub.subId)}')" class="btn btn-sm btn-outline-primary py-0 px-2.5 rounded-pill fw-bold">📎 เปิดไฟล์แนบ</button>
                             ` : `
                                 <span class="badge bg-danger-subtle text-danger mb-1 d-block">⏳ ยังไม่ส่ง</span>
                             `)}
@@ -1212,7 +1348,179 @@
             });
             html += `</div>`;
             document.getElementById("statusModalBody").innerHTML = html;
-            new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
+            showModal('submissionStatusModal');
+        }
+
+        // ======================= แถบรูปผู้ส่งงาน (แยก OPD/IPD + ป้าย 1st 2nd 3rd) =======================
+        function getTaskSubs(taskId) {
+            return (appData.submissions || [])
+                .filter(s => s.taskId === taskId)
+                .map(s => Object.assign({}, s, userInfo(s.userId, s)))
+                .sort((a, b) => (timeOf(a.submittedAt) - timeOf(b.submittedAt)) || String(a.subId).localeCompare(String(b.subId)));
+        }
+
+        function groupSubsByCare(subs) {
+            const groups = {};
+            subs.forEach(s => { const k = careKey(s.care); (groups[k] = groups[k] || []).push(s); });
+            return groups;
+        }
+
+        function rankBadge(i) {
+            if (i > 2) return "";
+            return `<sup class="rank-sup r${i + 1}">${i + 1}<small>${["st", "nd", "rd"][i]}</small></sup>`;
+        }
+
+        function renderSubmitterStrip(task) {
+            if (task.type === 'ประชุม') return "";
+            const subs = getTaskSubs(task.taskId);
+            const targets = (appData.users || []).filter(u => isUserTargeted(task, u));
+            let html = `<div class="sub-strip-title text-emerald-700">✅ ส่งงานแล้ว ${subs.length}/${targets.length} คน</div>`;
+            if (subs.length === 0) return html + `<div class="text-slate-400 text-sm">ยังไม่มีผู้ส่งงาน</div>`;
+
+            const groups = groupSubsByCare(subs);
+            ["OPD", "IPD", "OTHER"].filter(k => groups[k]).forEach(k => {
+                const list = groups[k];
+                const tCount = targets.filter(u => careKey(u.careType || "OPD") === k).length;
+                html += `
+                    <div class="sub-group">
+                        <div class="sub-group-label">${careLabel(k)} <span class="cnt">ส่งแล้ว ${list.length}${tCount ? "/" + tCount : ""} คน</span></div>
+                        <div class="sub-av-row">
+                            ${list.map((s, i) => `
+                                <button type="button" class="sub-av ${i === 0 ? 'top1' : ''}" title="${esc(s.name)}" onclick="event.stopPropagation(); showSubmissionPerson('${enc(s.subId)}')">
+                                    <img src="${esc(s.pic)}" onerror="this.src='${DEFAULT_AVATAR}'" alt="">${rankBadge(i)}
+                                </button>`).join('')}
+                        </div>
+                    </div>`;
+            });
+            return html;
+        }
+
+        function showSubmissionPerson(encSubId) {
+            const subId = decodeURIComponent(encSubId);
+            const raw = (appData.submissions || []).find(s => s.subId === subId);
+            if (!raw) return;
+            const s = Object.assign({}, raw, userInfo(raw.userId, raw));
+            const task = appData.tasks.find(t => t.taskId === s.taskId) || {};
+            const groupList = groupSubsByCare(getTaskSubs(s.taskId))[careKey(s.care)] || [];
+            const rankIdx = groupList.findIndex(x => x.subId === s.subId);
+            const isMine = s.userId === currentUser.userId;
+            const edited = s.updatedAt && Math.abs(timeOf(s.updatedAt) - timeOf(s.submittedAt)) > 60000;
+            const rankText = rankIdx >= 0 ? `🏅 ส่งเป็นลำดับที่ ${rankIdx + 1} ของกลุ่ม ${careLabel(careKey(s.care))}` : "";
+
+            Swal.fire({
+                html: `
+                    <img src="${esc(s.pic)}" onerror="this.src='${DEFAULT_AVATAR}'" class="pp-avatar" alt="">
+                    <div class="pp-name">${esc(s.name)}</div>
+                    <div class="d-flex justify-content-center gap-1 flex-wrap my-2">
+                        <span class="badge-dept">🏥 ${esc(s.dept || '-')}</span>${renderCareTypeBadge(s.care)}
+                    </div>
+                    ${rankText ? `<div class="pp-rank">${rankText}</div>` : ''}
+                    <div class="pp-info text-start">
+                        <div>📋 งาน: <b>${esc(task.title || '-')}</b></div>
+                        <div>🕒 ส่งเมื่อ: ${formatDateTimeThai(s.submittedAt)}</div>
+                        ${edited ? `<div>🔄 แก้ไขล่าสุด: ${formatDateTimeThai(s.updatedAt)}</div>` : ''}
+                        <div>📎 ไฟล์: ${esc(s.fileName || (s.fileUrl ? 'ไฟล์งาน' : 'ไม่มีไฟล์'))}</div>
+                        ${s.note ? `<div>💬 หมายเหตุ: ${esc(s.note)}</div>` : ''}
+                    </div>
+                    <div class="d-grid gap-2 mt-3">
+                        ${s.fileUrl ? `
+                            <button class="btn btn-primary rounded-pill fw-bold" onclick="openDriveFile(decodeURIComponent('${enc(s.fileUrl)}'))">📂 เปิดไฟล์งาน</button>
+                            <button class="btn btn-outline-primary rounded-pill fw-bold" onclick="openDriveFile(decodeURIComponent('${enc(driveDownloadUrl(s.fileUrl))}'))">⬇️ ดาวน์โหลดไฟล์</button>` : ''}
+                        ${isMine ? `<button class="btn btn-outline-danger rounded-pill fw-bold" onclick="deleteMySubmission('${enc(s.subId)}')">🗑️ ลบไฟล์งานของฉัน</button>` : ''}
+                    </div>`,
+                confirmButtonText: "ปิด",
+                confirmButtonColor: "#64748b"
+            });
+        }
+
+        async function deleteMySubmission(encSubId) {
+            const subId = decodeURIComponent(encSubId);
+            const s = (appData.submissions || []).find(x => x.subId === subId);
+            if (!s || s.userId !== currentUser.userId) {
+                Swal.fire("ลบไม่ได้", "ลบได้เฉพาะผู้ส่งงานรายการนี้เท่านั้น", "warning");
+                return;
+            }
+            const c = await Swal.fire({
+                title: "ยืนยันการลบไฟล์งาน",
+                html: "ไฟล์ที่ส่งจะถูกย้ายไปถังขยะใน Drive และรายการส่งงานจะถูกลบ<br>สามารถส่งงานใหม่ได้ภายหลัง",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "ลบไฟล์",
+                cancelButtonText: "ยกเลิก",
+                confirmButtonColor: "#ef4444"
+            });
+            if (!c.isConfirmed) return;
+
+            Swal.fire({ title: 'กำลังลบไฟล์งาน...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const res = await postToGAS({ action: "deleteSubmission", subId: subId, userId: currentUser.userId, accessToken: getLineAccessToken() });
+            if (res.status === "error") {
+                Swal.fire("ลบไม่สำเร็จ", res.message, "error");
+                return;
+            }
+            await loadAllData();
+            if ((appData.submissions || []).some(x => x.subId === subId)) {
+                Swal.fire("ลบไม่สำเร็จ", "ระบบยังไม่ได้ลบรายการ กรุณาลองใหม่อีกครั้ง", "error");
+                return;
+            }
+            hideModal('submissionStatusModal');
+            Swal.fire("ลบเรียบร้อย", "ลบไฟล์งานของคุณแล้ว", "success");
+        }
+
+        // ======================= ผู้เปิดอ่านวาระประชุม =======================
+        function getTaskReads(taskId) {
+            return (appData.reads || [])
+                .filter(r => r.refId === taskId)
+                .map(r => Object.assign({}, r, userInfo(r.userId, r)))
+                .sort((a, b) => timeOf(a.readAt) - timeOf(b.readAt));
+        }
+
+        function renderReaderStrip(task) {
+            const reads = getTaskReads(task.taskId);
+            let html = `<div class="sub-strip-title text-amber-700">👁️ เปิดอ่านแล้ว ${reads.length} คน</div>`;
+            if (reads.length === 0) return html + `<div class="text-slate-400 text-sm">ยังไม่มีผู้เปิดอ่าน</div>`;
+            return html + `<div class="sub-av-row">${reads.map(r => `
+                <button type="button" class="sub-av reader" title="${esc(r.name)}" onclick="event.stopPropagation(); showReaderPerson('${enc(r.refId)}','${enc(r.userId)}')">
+                    <img src="${esc(r.pic)}" onerror="this.src='${DEFAULT_AVATAR}'" alt="">
+                </button>`).join('')}</div>`;
+        }
+
+        function showReaderPerson(encRefId, encUserId) {
+            const refId = decodeURIComponent(encRefId), userId = decodeURIComponent(encUserId);
+            const r = getTaskReads(refId).find(x => x.userId === userId);
+            if (!r) return;
+            const task = appData.tasks.find(t => t.taskId === refId) || {};
+            Swal.fire({
+                html: `
+                    <img src="${esc(r.pic)}" onerror="this.src='${DEFAULT_AVATAR}'" class="pp-avatar" alt="">
+                    <div class="pp-name">${esc(r.name)}</div>
+                    <div class="d-flex justify-content-center gap-1 flex-wrap my-2">
+                        <span class="badge-dept">🏥 ${esc(r.dept || '-')}</span>${renderCareTypeBadge(r.care)}
+                    </div>
+                    <div class="pp-info text-start">
+                        <div>📅 วาระ: <b>${esc(task.title || '-')}</b></div>
+                        <div>👁️ เปิดอ่านเมื่อ: ${formatDateTimeThai(r.readAt)}</div>
+                    </div>`,
+                confirmButtonText: "ปิด",
+                confirmButtonColor: "#64748b"
+            });
+        }
+
+        function markTaskRead(task) {
+            if (!currentUser.isLineUser) return; // บันทึกเฉพาะผู้ที่เข้าสู่ระบบด้วย LINE
+            if ((appData.reads || []).some(r => r.refId === task.taskId && r.userId === currentUser.userId)) return;
+            const rec = {
+                refId: task.taskId,
+                userId: currentUser.userId,
+                fullName: currentUser.fullName || currentUser.displayName,
+                department: currentUser.department,
+                careType: currentUser.careType,
+                pictureUrl: currentUser.pictureUrl,
+                readAt: new Date().toISOString()
+            };
+            appData.reads = (appData.reads || []).concat([rec]);
+            renderHomeDashboard();
+            renderTrackTasks();
+            postToGAS({ action: "markRead", read: rec });
         }
 
         function renderMeetingsDataTable() {
@@ -1242,7 +1550,7 @@
             tbody.innerHTML = filteredList.map(m => {
                 const d = parseFlexibleDate(m.meetingDate);
                 const sortKey = d ? d.toISOString() : (m.meetingDate || '');
-                const safeJson = encodeURIComponent(JSON.stringify(m));
+                const safeJson = enc(JSON.stringify(m));
 
                 return `
                     <tr>
@@ -1250,11 +1558,11 @@
                             <div class="fw-bold text-emerald-700 leading-tight">${formatShortDateThai(m.meetingDate)}</div>
                         </td>
                         <td>
-                            <div class="fw-bold text-slate-800 leading-snug">${m.title || '-'} ${m.fileUrl ? '📎' : ''}</div>
+                            <div class="fw-bold text-slate-800 leading-snug">${esc(m.title || '-')} ${m.fileUrl ? '📎' : ''}</div>
                         </td>
                         <td class="text-center">
-                            <button onclick="openMeetingDetailFromRow('${safeJson}')" class="btn btn-sm btn-outline-success rounded-circle p-1.5" title="ดูรายละเอียด / ลบ">
-                                <i class="fa-solid fa-eye"></i>
+                            <button onclick="openMeetingDetailFromRow('${safeJson}')" class="scifi-eye-btn" title="ดูรายละเอียด / ลบ" aria-label="ดูรายละเอียด">
+                                ${EYE_SVG}
                             </button>
                         </td>
                     </tr>
@@ -1306,9 +1614,10 @@
                         <div class="fw-bold text-lg mt-1">${t.title}</div>
                         <div class="text-slate-600 mb-2">${t.detail || '-'}</div>
                         <div class="text-rose-600 fw-bold text-sm mb-2">⏰ กำหนดส่ง: ${formatDateTimeThai(t.dueDate)}</div>
+                        <div class="mb-2">${renderSubmitterStrip(t)}</div>
                         <div class="d-flex flex-wrap gap-2">
-                            ${t.attachmentUrl ? `<button onclick="openDriveFile('${t.attachmentUrl}')" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📥 โหลดไฟล์ต้นเรื่อง</button>` : ''}
-                            ${sub ? `<button onclick="openDriveFile('${sub.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 ดูไฟล์ที่ส่งแล้ว</button>` : ''}
+                            ${t.attachmentUrl ? `<button onclick="openDriveFile(decodeURIComponent('${enc(t.attachmentUrl)}'))" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📥 โหลดไฟล์ต้นเรื่อง</button>` : ''}
+                            ${sub ? `<button onclick="showSubmissionPerson('${enc(sub.subId)}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 ดูไฟล์ที่ส่งแล้ว</button>` : ''}
                             <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold" onclick="openSubmitWorkModal('${t.taskId}')">
                                 ${sub ? '🔄 อัปเดตไฟล์ส่งงานใหม่' : '📤 อัปโหลดไฟล์ส่งงาน'}
                             </button>
@@ -1345,17 +1654,59 @@
 
         function openCreateTaskModal() {
             updateTargetUsersPreview();
-            new bootstrap.Modal(document.getElementById('createTaskModal')).show();
+            showModal('createTaskModal');
         }
-        function openAddMeetingModal() { new bootstrap.Modal(document.getElementById('addMeetingModal')).show(); }
+        function openAddMeetingModal() { showModal('addMeetingModal'); }
 
         function openSubmitWorkModal(taskId) {
             const task = appData.tasks.find(t => t.taskId === taskId);
+            if (!task) return;
             document.getElementById("submitTaskId").value = taskId;
             document.getElementById("submitTaskTitleDisplay").innerText = task.title;
             document.getElementById("submitTaskDetailDisplay").innerText = task.detail || "";
             document.getElementById("workSubmissionFile").value = "";
-            new bootstrap.Modal(document.getElementById('submitWorkModal')).show();
+
+            const mine = (appData.submissions || []).find(s => s.taskId === taskId && s.userId === currentUser.userId);
+            document.getElementById("workSubmissionNote").value = mine ? (mine.note || "") : "";
+            fillSubmitterCard(mine);
+            showModal('submitWorkModal');
+        }
+
+        // แสดงรูปโปรไฟล์ ชื่อ หน่วยงาน ประเภทบริการ ของผู้ส่ง จากข้อมูลเดิม
+        function fillSubmitterCard(mine) {
+            const reg = getRegisteredUser();
+            const pic = currentUser.isLineUser ? currentUser.pictureUrl : ((reg && reg.pictureUrl) || currentUser.pictureUrl);
+            const avatar = document.getElementById("submitterAvatar");
+            avatar.onerror = () => { avatar.onerror = null; avatar.src = DEFAULT_AVATAR; };
+            avatar.src = pic || DEFAULT_AVATAR;
+            document.getElementById("submitterName").innerText = (reg && reg.fullName) || currentUser.fullName || currentUser.displayName || "-";
+            document.getElementById("submitterDept").innerText = "🏥 " + ((reg && reg.department) || currentUser.department || "ยังไม่ระบุหน่วยงาน");
+            document.getElementById("submitterCare").innerHTML = renderCareTypeBadge((reg && reg.careType) || currentUser.careType);
+
+            const warn = document.getElementById("submitterWarn");
+            if (!reg) {
+                warn.innerHTML = `⚠️ ยังไม่ได้บันทึกโปรไฟล์ในระบบ กรุณาบันทึกชื่อ หน่วยงาน และประเภทบริการก่อนส่งงาน
+                    <button type="button" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold mt-1 d-block" onclick="goToProfileFromSubmit()">ไปหน้าโปรไฟล์</button>`;
+                warn.classList.remove("d-none");
+            } else if (!currentUser.isLineUser) {
+                warn.innerHTML = "⚠️ ยังไม่ได้เข้าสู่ระบบด้วย LINE กรุณาเปิดหน้านี้ผ่าน LINE เพื่อให้งานผูกกับบัญชีของคุณ";
+                warn.classList.remove("d-none");
+            } else {
+                warn.classList.add("d-none");
+            }
+
+            const info = document.getElementById("submitExistingInfo");
+            if (mine) {
+                info.innerHTML = `✅ ส่งแล้วเมื่อ ${formatDateTimeThai(mine.submittedAt)}${mine.fileName ? ` — ${esc(mine.fileName)}` : ''}<br>หากส่งใหม่ ไฟล์ใหม่จะแทนที่ไฟล์เดิม`;
+                info.classList.remove("d-none");
+            } else {
+                info.classList.add("d-none");
+            }
+        }
+
+        function goToProfileFromSubmit() {
+            hideModal('submitWorkModal');
+            switchTab('tab-profile');
         }
 
         async function submitNewTask() {
@@ -1391,7 +1742,7 @@
                 Swal.fire("เกิดข้อผิดพลาด", res.message, "error");
                 return;
             }
-            bootstrap.Modal.getInstance(document.getElementById('createTaskModal')).hide();
+            hideModal('createTaskModal');
             document.getElementById("taskTitle").value = "";
             document.getElementById("taskDetail").value = "";
             document.getElementById("taskAttachmentFile").value = "";
@@ -1402,37 +1753,75 @@
         async function confirmSubmitWork() {
             const taskId = document.getElementById("submitTaskId").value;
             const fileInput = document.getElementById("workSubmissionFile");
+            const reg = getRegisteredUser();
+            if (!reg) {
+                Swal.fire({
+                    title: "กรุณาบันทึกโปรไฟล์ก่อน",
+                    text: "ต้องมีชื่อ หน่วยงาน และประเภทบริการ เพื่อแสดงผู้ส่งงานให้ถูกต้อง",
+                    icon: "warning",
+                    confirmButtonText: "ไปหน้าโปรไฟล์",
+                    confirmButtonColor: "#10b981"
+                }).then(() => goToProfileFromSubmit());
+                return;
+            }
             if (fileInput.files.length === 0) {
                 Swal.fire("กรุณาแนบไฟล์", "โปรดเลือกไฟล์งานก่อนกดยืนยันการส่ง", "warning");
                 return;
             }
+            const file = fileInput.files[0];
+            if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+                Swal.fire("ไฟล์ใหญ่เกินไป", `ขนาดไฟล์ต้องไม่เกิน ${MAX_UPLOAD_MB} MB (ไฟล์นี้ ${(file.size / 1048576).toFixed(1)} MB)`, "warning");
+                return;
+            }
 
             Swal.fire({ title: 'กำลังอัปโหลดไฟล์ส่งงาน...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            const fileData = await readFileAsBase64(fileInput.files[0]);
+            let fileData;
+            try {
+                fileData = await readFileAsBase64(file);
+            } catch (e) {
+                Swal.fire("อ่านไฟล์ไม่สำเร็จ", "กรุณาเลือกไฟล์ใหม่อีกครั้ง", "error");
+                return;
+            }
             const payload = {
                 action: "submitWork",
                 submission: {
                     taskId: taskId,
                     userId: currentUser.userId,
-                    fullName: currentUser.fullName,
-                    department: currentUser.department,
-                    careType: currentUser.careType,
+                    fullName: reg.fullName || currentUser.fullName || currentUser.displayName,
+                    department: reg.department || currentUser.department,
+                    careType: reg.careType || currentUser.careType,
+                    pictureUrl: currentUser.isLineUser ? currentUser.pictureUrl : (reg.pictureUrl || currentUser.pictureUrl),
                     note: document.getElementById("workSubmissionNote").value.trim()
                 },
                 file: fileData
             };
 
             const res = await postToGAS(payload);
-            Swal.close();
             if (res.status === "error") {
-                Swal.fire("เกิดข้อผิดพลาด", res.message, "error");
+                Swal.fire("ส่งงานไม่สำเร็จ", res.message, "error");
                 return;
             }
-            bootstrap.Modal.getInstance(document.getElementById('submitWorkModal')).hide();
+
+            // ตรวจซ้ำจากชีตจริงว่าบันทึกแล้ว
             await loadAllData();
+            const saved = (appData.submissions || []).find(s => s.taskId === taskId && s.userId === currentUser.userId);
+            if (!saved) {
+                Swal.fire("ยังไม่พบข้อมูลการส่งงาน", "ระบบยังไม่ได้รับไฟล์ กรุณาลองส่งใหม่อีกครั้ง หากยังไม่ได้ให้แจ้งผู้ดูแลระบบ", "error");
+                return;
+            }
+            hideModal('submitWorkModal');
+
+            const info = userInfo(saved.userId, saved);
+            const groupList = groupSubsByCare(getTaskSubs(taskId))[careKey(info.care)] || [];
+            const rank = groupList.findIndex(x => x.subId === saved.subId) + 1;
+            const rankHtml = rank > 0 && rank <= 3
+                ? `<div class="pp-rank mt-2">🏅 คุณส่งเป็นอันดับ ${rank}${["st", "nd", "rd"][rank - 1]} ของกลุ่ม ${careLabel(careKey(info.care))}</div>`
+                : (rank > 0 ? `<div class="text-sm text-slate-500 mt-2">ส่งเป็นลำดับที่ ${rank} ของกลุ่ม ${careLabel(careKey(info.care))}</div>` : "");
+
             Swal.fire({
                 title: "ส่งงานสำเร็จ ✅",
-                html: res.fileUrl ? `อัปโหลดไฟล์เรียบร้อยแล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 ตรวจสอบลิงก์ไฟล์ใน Drive</button>` : "อัปโหลดไฟล์เรียบร้อยแล้ว",
+                html: `อัปโหลดไฟล์เรียบร้อยแล้ว${rankHtml}
+                    ${saved.fileUrl ? `<br><button onclick="openDriveFile(decodeURIComponent('${enc(saved.fileUrl)}'))" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 ตรวจสอบไฟล์ใน Drive</button>` : ''}`,
                 icon: "success",
                 confirmButtonColor: "#10b981"
             });
@@ -1468,7 +1857,7 @@
                 return;
             }
 
-            bootstrap.Modal.getInstance(document.getElementById('addMeetingModal')).hide();
+            hideModal('addMeetingModal');
             document.getElementById("meetTitle").value = "";
             document.getElementById("meetFile").value = "";
 
@@ -1479,7 +1868,7 @@
             Swal.fire({
                 title: "บันทึกสำเร็จ 🎉",
                 html: res.fileUrl
-                    ? `บันทึกลงตารางและส่งการ์ด Flex พร้อมรูปโปรไฟล์เข้ากลุ่ม LINE แล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>`
+                    ? `บันทึกลงตารางและส่งการ์ด Flex พร้อมรูปโปรไฟล์เข้ากลุ่ม LINE แล้ว<br><button onclick="openDriveFile(decodeURIComponent('${enc(res.fileUrl)}'))" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>`
                     : "บันทึกลงตารางเรียบร้อยแล้ว",
                 icon: "success",
                 confirmButtonColor: "#10b981"
