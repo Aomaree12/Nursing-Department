@@ -152,11 +152,12 @@
             font-size: 0.85rem;
             color: #065f46;
             font-weight: 600;
+            cursor: pointer;
         }
         .avatar-chip img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
         .fc .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 800; color: #065f46; }
         .fc .fc-button-primary { background-color: #10b981 !important; border-color: #10b981 !important; border-radius: 12px !important; }
-        .fc-event { border-radius: 8px !important; padding: 2px 5px !important; font-size: 0.82rem !important; border: none !important; }
+        .fc-event { border-radius: 8px !important; padding: 2px 5px !important; font-size: 0.82rem !important; border: none !important; cursor: pointer; }
         .fab-btn {
             position: fixed;
             bottom: 88px;
@@ -548,7 +549,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: เพิ่มบันทึกการประชุม (พร้อมช่องหมายเหตุส่ง Flex เข้ากลุ่ม) -->
+    <!-- MODAL 3: เพิ่มบันทึกการประชุม -->
     <div class="modal fade" id="addMeetingModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -657,7 +658,16 @@
             await loadAllData();
         });
 
-        // ฟังก์ชันส่ง POST ไปยัง Google Apps Script แบบแก้ปัญหาค้าง 100%
+        // ฟังก์ชันเปิดไฟล์ Google Drive ให้รองรับทั้งในแอป LINE (LIFF) และเบราว์เซอร์ทั่วไป
+        function openDriveFile(url) {
+            if (!url || url === "#") return;
+            if (typeof liff !== "undefined" && liff.isInClient()) {
+                liff.openWindow({ url: url, external: true });
+            } else {
+                window.open(url, "_blank");
+            }
+        }
+
         async function postToGAS(payload) {
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: "POST",
@@ -997,7 +1007,7 @@
                     <div class="border border-blue-200 rounded-4 p-2.5 mb-2 bg-white/80">
                         <div class="fw-bold text-primary">📘 บันทึกประชุม: ${m.title}</div>
                         <div class="text-slate-600">${m.summary || '-'}</div>
-                        ${m.fileUrl ? `<a href="${m.fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-1">📎 เปิดไฟล์รายงานประชุม</a>` : ''}
+                        ${m.fileUrl ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-sm btn-outline-primary rounded-pill mt-1 fw-bold">📎 เปิดไฟล์รายงานประชุม</button>` : ''}
                     </div>
                 `;
             });
@@ -1014,7 +1024,7 @@
                         <p><b>🏥 หน่วยงาน:</b> ${m.department} (${m.careType || 'OPD/IPD'})</p>
                         <p><b>📝 สรุปมติที่ประชุม:</b><br>${m.summary || '-'}</p>
                         <p class="text-amber-700"><b>📌 หมายเหตุ:</b> ${m.note || '-'}</p>
-                        ${m.fileUrl ? `<a href="${m.fileUrl}" target="_blank" class="btn btn-success w-100 rounded-pill mt-2 fw-bold">📎 เปิดไฟล์วาระ / รายงานการประชุม</a>` : ''}
+                        ${m.fileUrl ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-success w-100 rounded-pill mt-2 fw-bold">📎 เปิดไฟล์วาระ / รายงานการประชุม</button>` : ''}
                     </div>
                 `,
                 confirmButtonText: 'ปิด', confirmButtonColor: '#10b981'
@@ -1044,10 +1054,10 @@
                 const submittedAvatarsHtml = taskSubs.map(s => {
                     const u = appData.users.find(user => user.userId === s.userId) || { pictureUrl: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png', fullName: s.fullName };
                     return `
-                        <a href="${s.fileUrl}" target="_blank" class="avatar-chip text-decoration-none" title="คลิกเปิดไฟล์ของ ${u.fullName}">
+                        <span onclick="openDriveFile('${s.fileUrl}')" class="avatar-chip" title="คลิกเปิดไฟล์ของ ${u.fullName}">
                             <img src="${u.pictureUrl}">
                             <span>${u.fullName.split(' ')[0]}</span>
-                        </a>
+                        </span>
                     `;
                 }).join('');
 
@@ -1074,7 +1084,7 @@
                         ` : ''}
 
                         <div class="d-flex justify-content-end gap-1.5 pt-2 border-t border-slate-200/70">
-                            ${t.attachmentUrl ? `<a href="${t.attachmentUrl}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📎 ไฟล์คำสั่ง</a>` : ''}
+                            ${t.attachmentUrl ? `<button onclick="openDriveFile('${t.attachmentUrl}')" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📎 ไฟล์คำสั่ง</button>` : ''}
                             <button class="btn btn-sm btn-success rounded-pill px-3 fw-bold" onclick="viewSubmissionDetails('${t.taskId}')">🔍 ดูรายละเอียด & เช็กทุกคน</button>
                         </div>
                     </div>
@@ -1098,7 +1108,7 @@
                     <h5 class="fw-bold mt-1 mb-1">${task.title}</h5>
                     <p class="text-slate-600 mb-2">${task.detail || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
                     <div class="text-rose-600 fw-bold">⏰ กำหนดเวลา: ${formatDateTimeThai(task.dueDate)}</div>
-                    ${task.attachmentUrl ? `<a href="${task.attachmentUrl}" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill mt-2 px-3 fw-bold">📎 เปิดไฟล์คำสั่ง/วาระประชุม</a>` : ''}
+                    ${task.attachmentUrl ? `<button onclick="openDriveFile('${task.attachmentUrl}')" class="btn btn-sm btn-outline-dark rounded-pill mt-2 px-3 fw-bold">📎 เปิดไฟล์คำสั่ง/วาระประชุม</button>` : ''}
                 </div>
                 <h6 class="fw-bold mb-2">👥 รายชื่อผู้รับผิดชอบ (${taskSubs.length}/${targetUsers.length} คนส่งแล้ว)</h6>
                 <div class="list-group list-group-flush">
@@ -1121,7 +1131,7 @@
                         <div class="text-end">
                             ${task.type === 'ประชุม' ? `<span class="badge bg-info-subtle text-info px-2.5 py-1">รับทราบวาระ</span>` : (sub ? `
                                 <span class="badge bg-success mb-1 d-block">✅ ส่งแล้ว (${formatDateTimeThai(sub.submittedAt)})</span>
-                                <a href="${sub.fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2.5 rounded-pill fw-bold">📎 เปิดไฟล์แนบ</a>
+                                <button onclick="openDriveFile('${sub.fileUrl}')" class="btn btn-sm btn-outline-primary py-0 px-2.5 rounded-pill fw-bold">📎 เปิดไฟล์แนบ</button>
                             ` : `
                                 <span class="badge bg-danger-subtle text-danger mb-1 d-block">⏳ ยังไม่ส่ง</span>
                                 <button class="btn btn-sm btn-warning py-0 px-2.5 rounded-pill fw-bold" onclick="sendLineReminder('${u.userId}', '${task.title}')">🔔 ทวงงาน</button>
@@ -1156,7 +1166,7 @@
                     </td>
                     <td>
                         ${m.fileUrl
-                            ? `<a href="${m.fileUrl}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 เปิดดู</a>`
+                            ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 เปิดดู</button>`
                             : `<span class="text-slate-400 text-sm">ไม่มีไฟล์</span>`}
                     </td>
                 </tr>
@@ -1206,8 +1216,8 @@
                         <div class="text-slate-600 mb-2">${t.detail || '-'}</div>
                         <div class="text-rose-600 fw-bold text-sm mb-2">⏰ กำหนดส่ง: ${formatDateTimeThai(t.dueDate)}</div>
                         <div class="d-flex flex-wrap gap-2">
-                            ${t.attachmentUrl ? `<a href="${t.attachmentUrl}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📥 โหลดไฟล์ต้นเรื่อง</a>` : ''}
-                            ${sub ? `<a href="${sub.fileUrl}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 ดูไฟล์ที่ส่งแล้ว</a>` : ''}
+                            ${t.attachmentUrl ? `<button onclick="openDriveFile('${t.attachmentUrl}')" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📥 โหลดไฟล์ต้นเรื่อง</button>` : ''}
+                            ${sub ? `<button onclick="openDriveFile('${sub.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 ดูไฟล์ที่ส่งแล้ว</button>` : ''}
                             <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold" onclick="openSubmitWorkModal('${t.taskId}')">
                                 ${sub ? '🔄 อัปเดตไฟล์ส่งงานใหม่' : '📤 อัปโหลดไฟล์ส่งงาน'}
                             </button>
@@ -1242,9 +1252,6 @@
             `).join('');
         }
 
-        // ==========================================
-        // MODAL & FORM ACTIONS (แก้ปัญหาค้าง 100%)
-        // ==========================================
         function openCreateTaskModal() { new bootstrap.Modal(document.getElementById('createTaskModal')).show(); }
         function openAddMeetingModal() { new bootstrap.Modal(document.getElementById('addMeetingModal')).show(); }
 
@@ -1330,7 +1337,7 @@
                 await loadAllData();
                 Swal.fire({
                     title: "ส่งงานสำเร็จ ✅",
-                    html: res.fileUrl ? `อัปโหลดไฟล์เรียบร้อยแล้ว<br><a href="${res.fileUrl}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill mt-2">📎 ตรวจสอบลิงก์ไฟล์ใน Drive</a>` : "อัปโหลดไฟล์เรียบร้อยแล้ว",
+                    html: res.fileUrl ? `อัปโหลดไฟล์เรียบร้อยแล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 ตรวจสอบลิงก์ไฟล์ใน Drive</button>` : "อัปโหลดไฟล์เรียบร้อยแล้ว",
                     icon: "success",
                     confirmButtonColor: "#10b981"
                 });
@@ -1367,14 +1374,21 @@
                     file: fileData
                 };
 
-                await postToGAS(payload);
+                const res = await postToGAS(payload);
                 Swal.close();
                 bootstrap.Modal.getInstance(document.getElementById('addMeetingModal')).hide();
                 document.getElementById("meetTitle").value = "";
                 document.getElementById("meetSummary").value = "";
                 document.getElementById("meetFile").value = "";
                 await loadAllData();
-                Swal.fire("สำเร็จ 🎉", "บันทึกการประชุมและส่งการ์ด Flex เข้ากลุ่ม LINE เรียบร้อยแล้ว", "success");
+                Swal.fire({
+                    title: "สำเร็จ 🎉",
+                    html: res.fileUrl
+                        ? `บันทึกการประชุมและส่งการ์ด Flex เรียบร้อยแล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงานที่อัปโหลด</button>`
+                        : "บันทึกการประชุมและส่งการ์ด Flex เรียบร้อยแล้ว",
+                    icon: "success",
+                    confirmButtonColor: "#10b981"
+                });
             } catch (err) {
                 Swal.close();
                 Swal.fire("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกได้: " + err.message, "error");
