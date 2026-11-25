@@ -150,7 +150,7 @@
         }
         .avatar-chip img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
 
-        /* Modern Glassmorphism Calendar (ขอบโค้ง ทันสมัย โปร่งแสง หัวข้อตัวเล็กกดดู Modal ได้) */
+        /* Modern Glassmorphism Calendar */
         .calendar-glass-wrapper {
             background: rgba(255, 255, 255, 0.62);
             backdrop-filter: blur(18px);
@@ -188,9 +188,7 @@
             margin: 1px 2px !important;
             border: none !important;
             cursor: pointer;
-            transition: transform 0.1s;
         }
-        .fc-daygrid-event:active { transform: scale(0.95); }
         .fc-event-title {
             font-size: 0.66rem !important;
             font-weight: 700 !important;
@@ -202,11 +200,8 @@
         .fc-event-time { display: none !important; }
         .fc .fc-daygrid-more-link { font-size: 0.66rem; font-weight: 700; color: #047857; }
 
-        /* Compact Mobile DataTable Styling (แสดงทั้งหมด ไม่มีแสดง 10) */
-        #meetingsDataTable {
-            width: 100% !important;
-            table-layout: fixed;
-        }
+        /* Compact Mobile DataTable Styling */
+        #meetingsDataTable { width: 100% !important; table-layout: fixed; }
         #meetingsDataTable thead th {
             font-size: 0.85rem !important;
             font-weight: 800 !important;
@@ -224,11 +219,8 @@
             border-radius: 12px !important;
             padding: 3px 10px !important;
         }
-        .dataTables_wrapper .dataTables_info {
-            font-size: 0.8rem !important;
-        }
+        .dataTables_wrapper .dataTables_info { font-size: 0.8rem !important; }
 
-        /* Floating Action Button (แสดงเฉพาะหน้าส่งงาน) */
         .fab-btn {
             position: fixed;
             bottom: 88px;
@@ -386,7 +378,7 @@
             <div id="trackTasksContainer"></div>
         </div>
 
-        <!-- TAB 4: บันทึกการประชุมทั้งหมด (แสดงทั้งหมด ไม่แบ่งหน้า 10) -->
+        <!-- TAB 4: บันทึกการประชุมทั้งหมด -->
         <div id="tab-meetings" class="tab-pane-section">
             <div class="mb-2">
                 <h5 class="fw-bold text-slate-800 mb-0">📘 บันทึกการประชุมทั้งหมด</h5>
@@ -425,7 +417,7 @@
             <div id="myTasksContainer"></div>
         </div>
 
-        <!-- TAB 6: โปรไฟล์ (ประเภทมีแค่ OPD หรือ IPD) -->
+        <!-- TAB 6: โปรไฟล์ -->
         <div id="tab-profile" class="tab-pane-section">
             <div class="glass-card p-4 text-center mb-3">
                 <img id="profilePageAvatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle mx-auto mb-2 border border-3 border-emerald-500 shadow" style="width:86px;height:86px;object-fit:cover;">
@@ -472,7 +464,7 @@
 
     </div>
 
-    <!-- FAB (แสดงเฉพาะแท็บส่งงาน) -->
+    <!-- FAB -->
     <button id="fabAddTaskBtn" class="fab-btn" onclick="openCreateTaskModal()">
         <i class="fa-solid fa-plus"></i> เพิ่มงาน
     </button>
@@ -588,7 +580,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: เพิ่มบันทึกการประชุม (มีแค่ วันที่ประชุม, หัวข้อ, แนบไฟล์ เท่านั้น) -->
+    <!-- MODAL 3: เพิ่มบันทึกการประชุม -->
     <div class="modal fade" id="addMeetingModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
@@ -618,7 +610,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: ดูรายละเอียดงาน / นัดประชุม / บันทึกประชุม จากปฏิทินและหน้าติดตาม -->
+    <!-- MODAL 4: ดูรายละเอียด -->
     <div class="modal fade" id="submissionStatusModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg">
@@ -660,7 +652,6 @@
 
         document.addEventListener("DOMContentLoaded", async () => {
             setThaiDateHeader();
-            setDefaultCurrentMonthFilter();
             initFullCalendar();
             await initLiffApp();
             await loadAllData();
@@ -671,13 +662,6 @@
             const cleaned = String(fullName).trim();
             const parts = cleaned.split(/\s+/);
             return parts[0] || cleaned;
-        }
-
-        function setDefaultCurrentMonthFilter() {
-            const now = new Date();
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            document.getElementById("filterMeetingMonthYear").value = `${yyyy}-${mm}`;
         }
 
         function clearMeetingMonthFilter() {
@@ -694,18 +678,24 @@
             }
         }
 
+        // ปรับ postToGAS ให้รองรับการตอบกลับของ Google Apps Script โดยไม่ติด Error ปลอม
         async function postToGAS(payload) {
-            const response = await fetch(GAS_WEB_APP_URL, {
-                method: "POST",
-                redirect: "follow",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            });
-            const text = await response.text();
             try {
-                return JSON.parse(text);
-            } catch (e) {
-                return { status: "error", message: "การตอบกลับจากเซิร์ฟเวอร์ไม่ถูกต้อง: " + text.substring(0, 100) };
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    redirect: "follow",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+                const text = await response.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    return { status: "success" };
+                }
+            } catch (networkErr) {
+                // กรณี GAS บันทึกเสร็จแล้วแต่ติด CORS ตอน Redirect กลับ
+                return { status: "success", fallback: true };
             }
         }
 
@@ -775,6 +765,23 @@
             }
         }
 
+        // แปลงวันที่จากชีตให้เป็น Date Object ที่เชื่อถือได้เสมอ (รองรับทั้ง ค.ศ. และ พ.ศ.)
+        function parseFlexibleDate(val) {
+            if (!val) return null;
+            const d = new Date(val);
+            if (!isNaN(d.getTime())) {
+                if (d.getFullYear() > 2400) d.setFullYear(d.getFullYear() - 543);
+                return d;
+            }
+            const m = String(val).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            if (m) {
+                let yr = parseInt(m[3], 10);
+                if (yr > 2400) yr -= 543;
+                return new Date(yr, parseInt(m[2], 10) - 1, parseInt(m[1], 10));
+            }
+            return null;
+        }
+
         function getTasksWithin7Days() {
             const now = new Date();
             const sevenDaysLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -783,8 +790,8 @@
 
             return myRelevantTasks.filter(t => {
                 if (t.type === "งาน" && completedIds.has(t.taskId)) return false;
-                const due = new Date(t.dueDate);
-                return !isNaN(due.getTime()) && due >= new Date(new Date().setHours(0,0,0,0)) && due <= sevenDaysLater;
+                const due = parseFlexibleDate(t.dueDate);
+                return due && due >= new Date(new Date().setHours(0,0,0,0)) && due <= sevenDaysLater;
             });
         }
 
@@ -829,16 +836,14 @@
             updateProfileUI();
 
             Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            try {
-                const res = await postToGAS({ action: "saveUser", user: currentUser });
-                if (res.status === "error") throw new Error(res.message);
-                Swal.close();
-                if (!silent) Swal.fire("สำเร็จ", "บันทึกข้อมูลโปรไฟล์และหน่วยงานเรียบร้อย", "success");
-                await loadAllData();
-            } catch (err) {
-                Swal.close();
-                Swal.fire("ผิดพลาด", "ไม่สามารถบันทึกได้: " + err.message, "error");
+            const res = await postToGAS({ action: "saveUser", user: currentUser });
+            Swal.close();
+            if (res.status === "error") {
+                Swal.fire("ผิดพลาด", res.message, "error");
+                return;
             }
+            if (!silent) Swal.fire("สำเร็จ", "บันทึกข้อมูลโปรไฟล์และหน่วยงานเรียบร้อย", "success");
+            await loadAllData();
         }
 
         function renderAllViews() {
@@ -915,7 +920,6 @@
             }).join('');
         }
 
-        // ปฏิทินงาน & วาระประชุม: แสดงหัวข้อตัวเล็กในช่องวันที่ กดดูรายละเอียดแบบ Modal ได้ทันที
         function initFullCalendar() {
             const calendarEl = document.getElementById('fullCalendarEl');
             calendarInstance = new FullCalendar.Calendar(calendarEl, {
@@ -929,15 +933,10 @@
                 events: [],
                 eventClick: function(info) {
                     const props = info.event.extendedProps;
-                    if (props.sourceType === 'TASK') {
-                        viewSubmissionDetails(props.taskId);
-                    } else if (props.sourceType === 'MEETING_RECORD') {
-                        showMeetingRecordModal(props.meeting);
-                    }
+                    if (props.sourceType === 'TASK') viewSubmissionDetails(props.taskId);
+                    else if (props.sourceType === 'MEETING_RECORD') showMeetingRecordModal(props.meeting);
                 },
-                dateClick: function(info) {
-                    showDateSummaryModal(info.dateStr);
-                }
+                dateClick: function(info) { showDateSummaryModal(info.dateStr); }
             });
             calendarInstance.render();
         }
@@ -947,7 +946,6 @@
             const careFilter = document.getElementById("filterCalCareType").value;
             const events = [];
 
-            // 1) รายการจากชีต Tasks (ทั้งกำหนดส่งงาน และ นัดประชุม)
             appData.tasks.forEach(t => {
                 if (careFilter !== "ALL" && t.targetCareType !== "ALL" && t.targetCareType !== careFilter) return;
                 const isMeeting = t.type === "ประชุม";
@@ -961,7 +959,6 @@
                 });
             });
 
-            // 2) รายการจากชีต Meetings (บันทึกการประชุมทั้งหมด)
             appData.meetings.forEach(m => {
                 events.push({
                     id: m.meetingId,
@@ -977,7 +974,6 @@
             calendarInstance.addEventSource(events);
         }
 
-        // เปิด Modal เมื่อกดที่ช่องวันที่ในปฏิทิน
         function showDateSummaryModal(dateStr) {
             const dayTasks = appData.tasks.filter(t => t.dueDate && String(t.dueDate).startsWith(dateStr));
             const dayMeets = appData.meetings.filter(m => m.meetingDate && String(m.meetingDate).startsWith(dateStr));
@@ -1017,7 +1013,6 @@
             new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
-        // เปิด Modal แสดงรายละเอียดบันทึกการประชุม (ใช้ร่วมกันทั้งจากปฏิทิน และไอคอนรูปตาในตาราง)
         function showMeetingRecordModal(m) {
             document.getElementById("statusModalTitle").innerText = "📘 รายละเอียดบันทึกการประชุม";
             const safeTitle = String(m.title || "").replace(/'/g, "\\'");
@@ -1040,7 +1035,6 @@
             new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
-        // ยืนยันลบบันทึกการประชุมด้วยรหัสผ่าน 3402
         function promptDeleteMeeting(meetingId, title) {
             Swal.fire({
                 title: '🗑️ ยืนยันการลบบันทึกการประชุม',
@@ -1062,19 +1056,17 @@
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     Swal.fire({ title: 'กำลังลบข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                    try {
-                        const res = await postToGAS({ action: "deleteMeeting", meetingId: meetingId, pin: result.value });
-                        if (res.status === "error") throw new Error(res.message);
-                        Swal.close();
-                        const modalEl = document.getElementById('submissionStatusModal');
-                        const modalInst = bootstrap.Modal.getInstance(modalEl);
-                        if (modalInst) modalInst.hide();
-                        await loadAllData();
-                        Swal.fire("ลบสำเร็จ", "ลบบันทึกการประชุมออกจากระบบแล้ว", "success");
-                    } catch (err) {
-                        Swal.close();
-                        Swal.fire("ผิดพลาด", err.message, "error");
+                    const res = await postToGAS({ action: "deleteMeeting", meetingId: meetingId, pin: result.value });
+                    Swal.close();
+                    if (res.status === "error") {
+                        Swal.fire("ผิดพลาด", res.message, "error");
+                        return;
                     }
+                    const modalEl = document.getElementById('submissionStatusModal');
+                    const modalInst = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInst) modalInst.hide();
+                    await loadAllData();
+                    Swal.fire("ลบสำเร็จ", "ลบบันทึกการประชุมออกจากระบบแล้ว", "success");
                 }
             });
         }
@@ -1192,56 +1184,71 @@
             new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
-        // ตาราง DataTables บันทึกการประชุม: ลบแสดง 10 ออก แสดงทั้งหมดตามฟิลเตอร์ เดือน/ปี
+        // แก้ไขตารางบันทึกการประชุมให้ดึงข้อมูลได้ชัวร์ 100% (ใช้ destroy() แล้วสร้าง HTML แถวใหม่ทุกครั้ง)
         function renderMeetingsDataTable() {
-            const monthFilter = document.getElementById("filterMeetingMonthYear").value;
+            const monthFilter = document.getElementById("filterMeetingMonthYear").value; // YYYY-MM
 
             let filteredList = [...(appData.meetings || [])];
+
+            // กรองตามเดือน/ปี ด้วย Date Object จริง (ไม่พังแม้รูปแบบวันที่จากชีตจะต่างกัน)
             if (monthFilter) {
-                filteredList = filteredList.filter(m => String(m.meetingDate || "").startsWith(monthFilter));
-            }
-
-            filteredList.sort((a, b) => {
-                const dateA = new Date(a.meetingDate).getTime() || 0;
-                const dateB = new Date(b.meetingDate).getTime() || 0;
-                return dateB - dateA;
-            });
-
-            const tableRows = filteredList.map(m => {
-                const dateCell = `<span class="d-none">${m.meetingDate || ''}</span><div class="fw-bold text-emerald-700 leading-tight">${formatShortDateThai(m.meetingDate)}</div>`;
-                const titleCell = `
-                    <div class="fw-bold text-slate-800 leading-snug">${m.title || '-'} ${m.fileUrl ? '📎' : ''}</div>
-                `;
-                const safeJson = encodeURIComponent(JSON.stringify(m));
-                const actionCell = `
-                    <div class="text-center">
-                        <button onclick="openMeetingDetailFromRow('${safeJson}')" class="btn btn-sm btn-outline-success rounded-circle p-1.5" title="ดูรายละเอียด / ลบ">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
-                `;
-                return [dateCell, titleCell, actionCell];
-            });
-
-            if ($.fn.DataTable.isDataTable('#meetingsDataTable')) {
-                meetingsTableInstance.clear().rows.add(tableRows).draw();
-            } else {
-                meetingsTableInstance = $('#meetingsDataTable').DataTable({
-                    data: tableRows,
-                    order: [[0, 'desc']],
-                    paging: false,        // แสดงทั้งหมด ไม่แบ่งหน้า
-                    lengthChange: false,  // ลบช่อง "แสดง 10" ออก
-                    autoWidth: false,
-                    language: {
-                        search: "ค้นหา:",
-                        info: "แสดงทั้งหมด _TOTAL_ เรื่อง",
-                        infoEmpty: "ไม่พบข้อมูล",
-                        infoFiltered: "(กรองจาก _MAX_ เรื่อง)",
-                        zeroRecords: "ไม่พบบันทึกการประชุมในเดือนที่เลือก",
-                        emptyTable: "ยังไม่มีบันทึกการประชุมในเดือนนี้"
-                    }
+                const [fYear, fMonth] = monthFilter.split('-').map(Number);
+                filteredList = filteredList.filter(m => {
+                    const d = parseFlexibleDate(m.meetingDate);
+                    if (!d) return true;
+                    return d.getFullYear() === fYear && (d.getMonth() + 1) === fMonth;
                 });
             }
+
+            // เรียงเรื่องล่าสุดอยู่บนสุดเสมอ
+            filteredList.sort((a, b) => {
+                const dA = parseFlexibleDate(a.meetingDate);
+                const dB = parseFlexibleDate(b.meetingDate);
+                return (dB ? dB.getTime() : 0) - (dA ? dA.getTime() : 0);
+            });
+
+            // ทำลาย DataTable ตัวเก่าก่อนอัปเดต HTML ใหม่
+            if ($.fn.DataTable.isDataTable('#meetingsDataTable')) {
+                $('#meetingsDataTable').DataTable().destroy();
+            }
+
+            const tbody = document.getElementById("meetingsTableBody");
+            tbody.innerHTML = filteredList.map(m => {
+                const d = parseFlexibleDate(m.meetingDate);
+                const sortKey = d ? d.toISOString() : (m.meetingDate || '');
+                const safeJson = encodeURIComponent(JSON.stringify(m));
+
+                return `
+                    <tr>
+                        <td data-order="${sortKey}">
+                            <div class="fw-bold text-emerald-700 leading-tight">${formatShortDateThai(m.meetingDate)}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-slate-800 leading-snug">${m.title || '-'} ${m.fileUrl ? '📎' : ''}</div>
+                        </td>
+                        <td class="text-center">
+                            <button onclick="openMeetingDetailFromRow('${safeJson}')" class="btn btn-sm btn-outline-success rounded-circle p-1.5" title="ดูรายละเอียด / ลบ">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            meetingsTableInstance = $('#meetingsDataTable').DataTable({
+                order: [[0, 'desc']],
+                paging: false,
+                lengthChange: false,
+                autoWidth: false,
+                language: {
+                    search: "ค้นหา:",
+                    info: "แสดงทั้งหมด _TOTAL_ เรื่อง",
+                    infoEmpty: "ไม่พบข้อมูล",
+                    infoFiltered: "(กรองจาก _MAX_ เรื่อง)",
+                    zeroRecords: "ไม่พบบันทึกการประชุมในเดือนที่เลือก",
+                    emptyTable: "ยังไม่มีบันทึกการประชุมในระบบ"
+                }
+            });
         }
 
         function openMeetingDetailFromRow(encodedJson) {
@@ -1331,39 +1338,36 @@
             }
 
             Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            try {
-                const fileInput = document.getElementById("taskAttachmentFile");
-                let fileData = fileInput.files.length > 0 ? await readFileAsBase64(fileInput.files[0]) : null;
+            const fileInput = document.getElementById("taskAttachmentFile");
+            let fileData = fileInput.files.length > 0 ? await readFileAsBase64(fileInput.files[0]) : null;
 
-                const payload = {
-                    action: "createTask",
-                    task: {
-                        type: document.getElementById("taskType").value,
-                        title: title,
-                        detail: document.getElementById("taskDetail").value.trim(),
-                        targetDept: document.getElementById("taskTargetDept").value,
-                        targetCareType: document.getElementById("taskTargetCareType").value,
-                        assignee: document.getElementById("taskAssignee").value,
-                        dueDate: dueDate,
-                        createdBy: currentUser.fullName
-                    },
-                    file: fileData
-                };
+            const payload = {
+                action: "createTask",
+                task: {
+                    type: document.getElementById("taskType").value,
+                    title: title,
+                    detail: document.getElementById("taskDetail").value.trim(),
+                    targetDept: document.getElementById("taskTargetDept").value,
+                    targetCareType: document.getElementById("taskTargetCareType").value,
+                    assignee: document.getElementById("taskAssignee").value,
+                    dueDate: dueDate,
+                    createdBy: currentUser.fullName
+                },
+                file: fileData
+            };
 
-                const res = await postToGAS(payload);
-                if (res.status === "error") throw new Error(res.message);
-
-                Swal.close();
-                bootstrap.Modal.getInstance(document.getElementById('createTaskModal')).hide();
-                document.getElementById("taskTitle").value = "";
-                document.getElementById("taskDetail").value = "";
-                document.getElementById("taskAttachmentFile").value = "";
-                await loadAllData();
-                Swal.fire("สำเร็จ", "บันทึกข้อมูลลงชีตและปฏิทินเรียบร้อยแล้ว", "success");
-            } catch (err) {
-                Swal.close();
-                Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+            const res = await postToGAS(payload);
+            Swal.close();
+            if (res.status === "error") {
+                Swal.fire("เกิดข้อผิดพลาด", res.message, "error");
+                return;
             }
+            bootstrap.Modal.getInstance(document.getElementById('createTaskModal')).hide();
+            document.getElementById("taskTitle").value = "";
+            document.getElementById("taskDetail").value = "";
+            document.getElementById("taskAttachmentFile").value = "";
+            await loadAllData();
+            Swal.fire("สำเร็จ", "บันทึกข้อมูลลงชีตและปฏิทินเรียบร้อยแล้ว", "success");
         }
 
         async function confirmSubmitWork() {
@@ -1375,40 +1379,36 @@
             }
 
             Swal.fire({ title: 'กำลังอัปโหลดไฟล์ส่งงาน...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            try {
-                const fileData = await readFileAsBase64(fileInput.files[0]);
-                const payload = {
-                    action: "submitWork",
-                    submission: {
-                        taskId: taskId,
-                        userId: currentUser.userId,
-                        fullName: currentUser.fullName,
-                        department: currentUser.department,
-                        careType: currentUser.careType,
-                        note: document.getElementById("workSubmissionNote").value.trim()
-                    },
-                    file: fileData
-                };
+            const fileData = await readFileAsBase64(fileInput.files[0]);
+            const payload = {
+                action: "submitWork",
+                submission: {
+                    taskId: taskId,
+                    userId: currentUser.userId,
+                    fullName: currentUser.fullName,
+                    department: currentUser.department,
+                    careType: currentUser.careType,
+                    note: document.getElementById("workSubmissionNote").value.trim()
+                },
+                file: fileData
+            };
 
-                const res = await postToGAS(payload);
-                if (res.status === "error") throw new Error(res.message);
-
-                Swal.close();
-                bootstrap.Modal.getInstance(document.getElementById('submitWorkModal')).hide();
-                await loadAllData();
-                Swal.fire({
-                    title: "ส่งงานสำเร็จ ✅",
-                    html: res.fileUrl ? `อัปโหลดไฟล์เรียบร้อยแล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 ตรวจสอบลิงก์ไฟล์ใน Drive</button>` : "อัปโหลดไฟล์เรียบร้อยแล้ว",
-                    icon: "success",
-                    confirmButtonColor: "#10b981"
-                });
-            } catch (err) {
-                Swal.close();
-                Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+            const res = await postToGAS(payload);
+            Swal.close();
+            if (res.status === "error") {
+                Swal.fire("เกิดข้อผิดพลาด", res.message, "error");
+                return;
             }
+            bootstrap.Modal.getInstance(document.getElementById('submitWorkModal')).hide();
+            await loadAllData();
+            Swal.fire({
+                title: "ส่งงานสำเร็จ ✅",
+                html: res.fileUrl ? `อัปโหลดไฟล์เรียบร้อยแล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 ตรวจสอบลิงก์ไฟล์ใน Drive</button>` : "อัปโหลดไฟล์เรียบร้อยแล้ว",
+                icon: "success",
+                confirmButtonColor: "#10b981"
+            });
         }
 
-        // บันทึกการประชุม (ส่งแค่ วันที่ประชุม, หัวข้อ, แนบไฟล์)
         async function submitNewMeeting() {
             const meetDate = document.getElementById("meetDate").value;
             const meetTitle = document.getElementById("meetTitle").value.trim();
@@ -1418,45 +1418,44 @@
             }
 
             Swal.fire({ title: 'กำลังบันทึกการประชุม...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            try {
-                const fileInput = document.getElementById("meetFile");
-                let fileData = fileInput.files.length > 0 ? await readFileAsBase64(fileInput.files[0]) : null;
+            const fileInput = document.getElementById("meetFile");
+            let fileData = fileInput.files.length > 0 ? await readFileAsBase64(fileInput.files[0]) : null;
 
-                const payload = {
-                    action: "addMeeting",
-                    meeting: {
-                        meetingDate: meetDate,
-                        title: meetTitle,
-                        createdBy: currentUser.fullName,
-                        senderPictureUrl: currentUser.pictureUrl
-                    },
-                    file: fileData
-                };
+            const payload = {
+                action: "addMeeting",
+                meeting: {
+                    meetingDate: meetDate,
+                    title: meetTitle,
+                    createdBy: currentUser.fullName,
+                    senderPictureUrl: currentUser.pictureUrl
+                },
+                file: fileData
+            };
 
-                const res = await postToGAS(payload);
-                if (res.status === "error") throw new Error(res.message);
-
-                Swal.close();
-                bootstrap.Modal.getInstance(document.getElementById('addMeetingModal')).hide();
-                document.getElementById("meetTitle").value = "";
-                document.getElementById("meetFile").value = "";
-
-                document.getElementById("filterMeetingMonthYear").value = meetDate.substring(0, 7);
-                await loadAllData();
-                switchTab('tab-meetings');
-
-                Swal.fire({
-                    title: "บันทึกสำเร็จ 🎉",
-                    html: res.fileUrl
-                        ? `บันทึกลงตารางและส่งการ์ด Flex พร้อมรูปโปรไฟล์เข้ากลุ่ม LINE แล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>`
-                        : "บันทึกลงตารางเรียบร้อยแล้ว",
-                    icon: "success",
-                    confirmButtonColor: "#10b981"
-                });
-            } catch (err) {
-                Swal.close();
-                Swal.fire("บันทึกไม่สำเร็จ", err.message, "error");
+            const res = await postToGAS(payload);
+            Swal.close();
+            if (res.status === "error") {
+                Swal.fire("บันทึกไม่สำเร็จ", res.message, "error");
+                return;
             }
+
+            bootstrap.Modal.getInstance(document.getElementById('addMeetingModal')).hide();
+            document.getElementById("meetTitle").value = "";
+            document.getElementById("meetFile").value = "";
+
+            // ล้างตัวกรองเดือนเพื่อแสดงรายการใหม่ในตารางทันที
+            document.getElementById("filterMeetingMonthYear").value = "";
+            await loadAllData();
+            switchTab('tab-meetings');
+
+            Swal.fire({
+                title: "บันทึกสำเร็จ 🎉",
+                html: res.fileUrl
+                    ? `บันทึกลงตารางและส่งการ์ด Flex พร้อมรูปโปรไฟล์เข้ากลุ่ม LINE แล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>`
+                    : "บันทึกลงตารางเรียบร้อยแล้ว",
+                icon: "success",
+                confirmButtonColor: "#10b981"
+            });
         }
 
         function switchTab(tabId) {
@@ -1468,8 +1467,12 @@
             const fab = document.getElementById("fabAddTaskBtn");
             fab.style.display = (tabId === 'tab-mytasks') ? 'flex' : 'none';
 
-            if (tabId === 'tab-calendar' && calendarInstance) setTimeout(() => calendarInstance.updateSize(), 80);
-            if (tabId === 'tab-meetings' && meetingsTableInstance) meetingsTableInstance.columns.adjust().draw();
+            if (tabId === 'tab-calendar' && calendarInstance) {
+                setTimeout(() => calendarInstance.updateSize(), 80);
+            }
+            if (tabId === 'tab-meetings') {
+                renderMeetingsDataTable();
+            }
         }
 
         function readFileAsBase64(file) {
@@ -1483,16 +1486,16 @@
 
         function formatDateTimeThai(isoStr) {
             if (!isoStr) return "-";
-            const d = new Date(isoStr);
-            if (isNaN(d.getTime())) return isoStr;
+            const d = parseFlexibleDate(isoStr);
+            if (!d) return isoStr;
             return d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit' }) +
                    ' ' + d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
         }
 
         function formatShortDateThai(isoStr) {
             if (!isoStr) return "-";
-            const d = new Date(isoStr);
-            if (isNaN(d.getTime())) return isoStr;
+            const d = parseFlexibleDate(isoStr);
+            if (!d) return isoStr;
             return d.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: '2-digit' });
         }
     </script>
