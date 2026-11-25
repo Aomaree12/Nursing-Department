@@ -658,7 +658,6 @@
             await loadAllData();
         });
 
-        // ฟังก์ชันเปิดไฟล์ Google Drive ให้รองรับทั้งในแอป LINE (LIFF) และเบราว์เซอร์ทั่วไป
         function openDriveFile(url) {
             if (!url || url === "#") return;
             if (typeof liff !== "undefined" && liff.isInClient()) {
@@ -1375,17 +1374,24 @@
                 };
 
                 const res = await postToGAS(payload);
+                if (res.status === "error") {
+                    throw new Error(res.message);
+                }
+
                 Swal.close();
                 bootstrap.Modal.getInstance(document.getElementById('addMeetingModal')).hide();
                 document.getElementById("meetTitle").value = "";
                 document.getElementById("meetSummary").value = "";
                 document.getElementById("meetFile").value = "";
+
                 await loadAllData();
+                switchTab('tab-meetings'); // สลับมาหน้าตารางบันทึกการประชุมทันที
+
                 Swal.fire({
-                    title: "สำเร็จ 🎉",
+                    title: "บันทึกสำเร็จ 🎉",
                     html: res.fileUrl
-                        ? `บันทึกการประชุมและส่งการ์ด Flex เรียบร้อยแล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงานที่อัปโหลด</button>`
-                        : "บันทึกการประชุมและส่งการ์ด Flex เรียบร้อยแล้ว",
+                        ? `เพิ่มลงตารางและส่ง Flex เรียบร้อยแล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงานที่อัปโหลด</button>`
+                        : "เพิ่มลงตารางบันทึกการประชุมเรียบร้อยแล้ว",
                     icon: "success",
                     confirmButtonColor: "#10b981"
                 });
