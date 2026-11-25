@@ -124,7 +124,6 @@
         }
         .badge-opd { background: rgba(224, 242, 254, 0.9); color: #0369a1; font-weight: 700; font-size: 0.8rem; padding: 2px 9px; border-radius: 12px; }
         .badge-ipd { background: rgba(243, 232, 255, 0.9); color: #7e22ce; font-weight: 700; font-size: 0.8rem; padding: 2px 9px; border-radius: 12px; }
-        .badge-allcare { background: rgba(254, 243, 199, 0.9); color: #b45309; font-weight: 700; font-size: 0.8rem; padding: 2px 9px; border-radius: 12px; }
         .task-glass-item {
             background: rgba(255, 255, 255, 0.84);
             backdrop-filter: blur(12px);
@@ -151,7 +150,7 @@
         }
         .avatar-chip img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
 
-        /* Modern Glassmorphism Calendar */
+        /* Modern Glassmorphism Calendar (ขอบโค้ง ทันสมัย โปร่งแสง หัวข้อตัวเล็กกดดู Modal ได้) */
         .calendar-glass-wrapper {
             background: rgba(255, 255, 255, 0.62);
             backdrop-filter: blur(18px);
@@ -184,14 +183,16 @@
         .fc .fc-daygrid-day-number { font-size: 0.78rem; font-weight: 700; color: #334155; text-decoration: none; padding: 3px 6px !important; }
         .fc .fc-day-today { background: rgba(167, 243, 208, 0.35) !important; }
         .fc-daygrid-event {
-            border-radius: 8px !important;
+            border-radius: 7px !important;
             padding: 1px 4px !important;
             margin: 1px 2px !important;
             border: none !important;
             cursor: pointer;
+            transition: transform 0.1s;
         }
+        .fc-daygrid-event:active { transform: scale(0.95); }
         .fc-event-title {
-            font-size: 0.68rem !important;
+            font-size: 0.66rem !important;
             font-weight: 700 !important;
             line-height: 1.2 !important;
             white-space: nowrap;
@@ -199,9 +200,9 @@
             text-overflow: ellipsis;
         }
         .fc-event-time { display: none !important; }
-        .fc .fc-daygrid-more-link { font-size: 0.68rem; font-weight: 700; color: #047857; }
+        .fc .fc-daygrid-more-link { font-size: 0.66rem; font-weight: 700; color: #047857; }
 
-        /* Compact Mobile DataTable Styling */
+        /* Compact Mobile DataTable Styling (แสดงทั้งหมด ไม่มีแสดง 10) */
         #meetingsDataTable {
             width: 100% !important;
             table-layout: fixed;
@@ -218,14 +219,12 @@
             vertical-align: middle;
             word-wrap: break-word;
         }
-        .dataTables_wrapper .dataTables_filter input,
-        .dataTables_wrapper .dataTables_length select {
+        .dataTables_wrapper .dataTables_filter input {
             font-size: 0.85rem !important;
             border-radius: 12px !important;
-            padding: 3px 8px !important;
+            padding: 3px 10px !important;
         }
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate {
+        .dataTables_wrapper .dataTables_info {
             font-size: 0.8rem !important;
         }
 
@@ -243,7 +242,7 @@
             font-size: 1.05rem;
             box-shadow: 0 8px 22px rgba(16, 185, 129, 0.42);
             z-index: 990;
-            display: none; /* ซ่อนเป็นค่าเริ่มต้น แสดงเฉพาะแท็บส่งงาน */
+            display: none;
             align-items: center;
             gap: 8px;
         }
@@ -274,7 +273,7 @@
 </head>
 <body>
 
-    <!-- HEADER (แสดงเฉพาะชื่อตัว + หน่วยงาน + วันที่แถวเดียวใต้หน่วยงาน) -->
+    <!-- HEADER -->
     <div class="app-header">
         <div class="max-w-3xl mx-auto">
             <div class="d-flex align-items-center gap-3">
@@ -335,7 +334,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: ปฏิทิน -->
+        <!-- TAB 2: ปฏิทินงาน & วาระประชุม -->
         <div id="tab-calendar" class="tab-pane-section">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="fw-bold text-slate-800 mb-0">🗓️ ปฏิทินงาน & วาระประชุม</h5>
@@ -348,17 +347,13 @@
 
             <div class="d-flex flex-wrap gap-1.5 mb-2">
                 <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(16,185,129,0.9);">📋 กำหนดส่งงาน</span>
-                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(245,158,11,0.92); color:#000;">📅 วาระนัดประชุม</span>
+                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(245,158,11,0.92); color:#000;">📅 นัดประชุม</span>
                 <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(59,130,246,0.9);">📘 บันทึกประชุม</span>
+                <span class="text-xs text-slate-500 ms-auto align-self-center">* แตะที่หัวข้อเพื่อดูรายละเอียด</span>
             </div>
 
             <div class="calendar-glass-wrapper mb-3">
                 <div id="fullCalendarEl"></div>
-            </div>
-
-            <div id="selectedDateEventsBox" class="glass-card p-3" style="display:none;">
-                <h6 class="fw-bold text-emerald-700 mb-2" id="selectedDateTitle">รายการวันที่เลือก</h6>
-                <div id="selectedDateEventList"></div>
             </div>
         </div>
 
@@ -391,13 +386,11 @@
             <div id="trackTasksContainer"></div>
         </div>
 
-        <!-- TAB 4: บันทึกการประชุมทั้งหมด (แยกแถวบนมือถือ + Filter เดือน/ปีเริ่มต้นเดือนปัจจุบัน + ตาราง 3 คอลัมน์) -->
+        <!-- TAB 4: บันทึกการประชุมทั้งหมด (แสดงทั้งหมด ไม่แบ่งหน้า 10) -->
         <div id="tab-meetings" class="tab-pane-section">
-            <!-- แถวที่ 1: หัวข้อ -->
             <div class="mb-2">
                 <h5 class="fw-bold text-slate-800 mb-0">📘 บันทึกการประชุมทั้งหมด</h5>
             </div>
-            <!-- แถวที่ 2: ปุ่มเพิ่มบันทึกการประชุม -->
             <div class="mb-2.5">
                 <button class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow-sm" onclick="openAddMeetingModal()">
                     <i class="fa-solid fa-plus me-1"></i> เพิ่มบันทึกการประชุม
@@ -405,7 +398,6 @@
             </div>
 
             <div class="glass-card p-3">
-                <!-- แถวที่ 3: ฟิวเตอร์เลือก เดือน / ปี (เริ่มต้นเดือนปัจจุบัน) -->
                 <div class="d-flex align-items-center gap-2 mb-2.5">
                     <label class="fw-bold text-sm text-emerald-800 text-nowrap mb-0">📅 เดือน/ปี:</label>
                     <input type="month" id="filterMeetingMonthYear" class="form-control form-control-sm rounded-pill fw-bold" onchange="renderMeetingsDataTable()">
@@ -433,7 +425,7 @@
             <div id="myTasksContainer"></div>
         </div>
 
-        <!-- TAB 6: โปรไฟล์ -->
+        <!-- TAB 6: โปรไฟล์ (ประเภทมีแค่ OPD หรือ IPD) -->
         <div id="tab-profile" class="tab-pane-section">
             <div class="glass-card p-4 text-center mb-3">
                 <img id="profilePageAvatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="rounded-circle mx-auto mb-2 border border-3 border-emerald-500 shadow" style="width:86px;height:86px;object-fit:cover;">
@@ -455,11 +447,10 @@
                         <option value="อื่นๆ">อื่นๆ</option>
                     </select>
 
-                    <label class="form-label fw-bold mb-1">🏷️ ประเภทบริการ (สำหรับคัดกรองแจกงาน)</label>
+                    <label class="form-label fw-bold mb-1">🏷️ ประเภทบริการ</label>
                     <select id="inputCareType" class="form-select rounded-4 mb-3">
-                        <option value="OPD">🩺 OPD (ผู้ป่วยนอก / หน่วยบริการนอก)</option>
-                        <option value="IPD">🛏️ IPD (ผู้ป่วยใน / หอผู้ป่วย)</option>
-                        <option value="OPD/IPD">🌟 ทั้ง OPD และ IPD</option>
+                        <option value="OPD">🩺 OPD</option>
+                        <option value="IPD">🛏️ IPD</option>
                     </select>
 
                     <button class="btn btn-success w-100 rounded-pill py-2.5 fw-bold shadow-sm" onclick="saveUserProfile()">
@@ -469,7 +460,7 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="fw-bold text-slate-800 mb-0">👥 ทำเนียบสมาชิก (แยกตามหน่วยงาน & OPD/IPD)</h5>
+                <h5 class="fw-bold text-slate-800 mb-0">👥 ทำเนียบสมาชิก (แยกตาม OPD / IPD)</h5>
                 <select id="filterDirCareType" class="form-select form-select-sm w-auto rounded-pill bg-white/90 fw-bold" onchange="renderMemberDirectory()">
                     <option value="ALL">ทั้งหมด</option>
                     <option value="OPD">เฉพาะ OPD</option>
@@ -481,7 +472,7 @@
 
     </div>
 
-    <!-- FAB (แสดงเฉพาะแท็บส่งงานเท่านั้น) -->
+    <!-- FAB (แสดงเฉพาะแท็บส่งงาน) -->
     <button id="fabAddTaskBtn" class="fab-btn" onclick="openCreateTaskModal()">
         <i class="fa-solid fa-plus"></i> เพิ่มงาน
     </button>
@@ -501,7 +492,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-emerald-600 text-white rounded-t-[26px]">
-                    <h5 class="modal-title fw-bold">✨ สั่งงานใหม่ / แจ้งเตือนวาระประชุม</h5>
+                    <h5 class="modal-title fw-bold">✨ สั่งงานใหม่ / นัดประชุม</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -537,7 +528,7 @@
                         <div class="col-6">
                             <label class="form-label fw-bold mb-1">🏷️ แจกงานตามประเภท</label>
                             <select id="taskTargetCareType" class="form-select rounded-4">
-                                <option value="ALL">🌟 ทั้ง OPD และ IPD</option>
+                                <option value="ALL">ทั้ง OPD และ IPD</option>
                                 <option value="OPD">🩺 เฉพาะ OPD</option>
                                 <option value="IPD">🛏️ เฉพาะ IPD</option>
                             </select>
@@ -597,55 +588,25 @@
         </div>
     </div>
 
-    <!-- MODAL 3: เพิ่มบันทึกการประชุม -->
+    <!-- MODAL 3: เพิ่มบันทึกการประชุม (มีแค่ วันที่ประชุม, หัวข้อ, แนบไฟล์ เท่านั้น) -->
     <div class="modal fade" id="addMeetingModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-emerald-600 text-white rounded-t-[26px]">
-                    <h5 class="modal-title fw-bold">📘 บันทึกการประชุมใหม่</h5>
+                    <h5 class="modal-title fw-bold">📘 เพิ่มบันทึกการประชุม</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">⏰ วัน-เวลาที่ประชุม *</label>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold mb-1">⏰ วันที่ประชุม *</label>
                         <input type="datetime-local" id="meetDate" class="form-control rounded-4">
                     </div>
-                    <div class="row g-2 mb-2">
-                        <div class="col-7">
-                            <label class="form-label fw-bold mb-1">🏥 หน่วยงาน / คณะกรรมการ *</label>
-                            <select id="meetDept" class="form-select rounded-4">
-                                <option value="หน่วยไตเทียม">หน่วยไตเทียม</option>
-                                <option value="กลุ่มการพยาบาล">กลุ่มการพยาบาล</option>
-                                <option value="งานควบคุมการติดเชื้อ (IC)">งานควบคุมการติดเชื้อ (IC)</option>
-                                <option value="งานพัฒนาคุณภาพ (CQI/HA)">งานพัฒนาคุณภาพ (CQI/HA)</option>
-                                <option value="ห้องตรวจโรค (OPD)">ห้องตรวจโรค (OPD)</option>
-                                <option value="หอผู้ป่วยใน (IPD)">หอผู้ป่วยใน (IPD)</option>
-                                <option value="อื่นๆ">อื่นๆ</option>
-                            </select>
-                        </div>
-                        <div class="col-5">
-                            <label class="form-label fw-bold mb-1">🏷️ ประเภท</label>
-                            <select id="meetCareType" class="form-select rounded-4">
-                                <option value="OPD/IPD">OPD & IPD</option>
-                                <option value="OPD">OPD</option>
-                                <option value="IPD">IPD</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">หัวข้อการประชุม (เรื่อง) *</label>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold mb-1">📝 หัวข้อการประชุม *</label>
                         <input type="text" id="meetTitle" class="form-control rounded-4" placeholder="เช่น ประชุมประจำเดือนหน่วยไตเทียม ครั้งที่ 11/2569">
                     </div>
                     <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">สรุปมติที่ประชุมสำคัญ</label>
-                        <textarea id="meetSummary" class="form-control rounded-4" rows="2" placeholder="สรุปสาระสำคัญหรือข้อสั่งการ..."></textarea>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label fw-bold mb-1 text-amber-700">📌 หมายเหตุ (แสดงในการ์ด Flex เมื่อแนบไฟล์วาระ)</label>
-                        <textarea id="meetNote" class="form-control rounded-4" rows="2">ให้ทุกคนอ่านรายละเอียดให้ครบถ้วน หากมีแก้ไขให้แจ้งเลขา</textarea>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">📎 แนบไฟล์วาระ / รายงานการประชุม (ส่ง Flex เข้ากลุ่มอัตโนมัติเมื่อแนบไฟล์)</label>
+                        <label class="form-label fw-bold mb-1">📎 แนบไฟล์วาระ / รายงานการประชุม (PDF / Word)</label>
                         <input type="file" id="meetFile" class="form-control rounded-4">
                     </div>
                 </div>
@@ -657,12 +618,12 @@
         </div>
     </div>
 
-    <!-- MODAL 4: ดูรายละเอียดงาน + ผู้ส่ง -->
+    <!-- MODAL 4: ดูรายละเอียดงาน / นัดประชุม / บันทึกประชุม จากปฏิทินและหน้าติดตาม -->
     <div class="modal fade" id="submissionStatusModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-slate-800 text-white rounded-t-[26px]">
-                    <h5 class="modal-title fw-bold" id="statusModalTitle">รายละเอียด & สถานะการส่งงาน</h5>
+                    <h5 class="modal-title fw-bold" id="statusModalTitle">รายละเอียด</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="statusModalBody"></div>
@@ -689,7 +650,7 @@
             displayName: "สมาชิกหน่วยงาน",
             fullName: localStorage.getItem("user_fullName") || "พว.อ้อมอารีย์ พุทธาวันดี",
             department: localStorage.getItem("user_department") || "หน่วยไตเทียม",
-            careType: localStorage.getItem("user_careType") || "OPD/IPD",
+            careType: localStorage.getItem("user_careType") || "OPD",
             pictureUrl: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
         };
 
@@ -705,7 +666,6 @@
             await loadAllData();
         });
 
-        // ตัดเอาเฉพาะชื่อตัว (ไม่เอานามสกุล)
         function getFirstNameOnly(fullName) {
             if (!fullName) return "สมาชิก";
             const cleaned = String(fullName).trim();
@@ -713,7 +673,6 @@
             return parts[0] || cleaned;
         }
 
-        // ตั้งค่าเริ่มต้นตัวกรองบันทึกการประชุมเป็นเดือน/ปีปัจจุบัน
         function setDefaultCurrentMonthFilter() {
             const now = new Date();
             const yyyy = now.getFullYear();
@@ -746,7 +705,7 @@
             try {
                 return JSON.parse(text);
             } catch (e) {
-                return { status: "success" };
+                return { status: "error", message: "การตอบกลับจากเซิร์ฟเวอร์ไม่ถูกต้อง: " + text.substring(0, 100) };
             }
         }
 
@@ -776,9 +735,7 @@
 
         function updateProfileUI() {
             document.getElementById("headerAvatar").src = currentUser.pictureUrl;
-            // แสดงเฉพาะชื่อตัว ไม่เอานามสกุล
             document.getElementById("headerName").innerText = getFirstNameOnly(currentUser.fullName || currentUser.displayName);
-            // แสดงเฉพาะหน่วยงาน ไม่เอาประเภท
             document.getElementById("headerDeptBadge").innerText = `🏥 ${currentUser.department || 'ยังไม่ระบุหน่วยงาน'}`;
 
             document.getElementById("profilePageAvatar").src = currentUser.pictureUrl;
@@ -786,13 +743,15 @@
             document.getElementById("profilePageUserId").innerText = currentUser.userId;
             document.getElementById("inputFullName").value = currentUser.fullName || currentUser.displayName;
             if (currentUser.department) document.getElementById("inputDepartment").value = currentUser.department;
-            if (currentUser.careType) document.getElementById("inputCareType").value = currentUser.careType;
+            if (currentUser.careType && (currentUser.careType === "OPD" || currentUser.careType === "IPD")) {
+                document.getElementById("inputCareType").value = currentUser.careType;
+            }
         }
 
         function renderCareTypeBadge(careType) {
             if (careType === "OPD") return `<span class="badge-opd">🩺 OPD</span>`;
             if (careType === "IPD") return `<span class="badge-ipd">🛏️ IPD</span>`;
-            return `<span class="badge-allcare">🌟 OPD/IPD</span>`;
+            return `<span class="badge-dept">OPD / IPD</span>`;
         }
 
         async function loadAllData() {
@@ -805,7 +764,7 @@
                     if (foundUser) {
                         currentUser.fullName = foundUser.fullName;
                         currentUser.department = foundUser.department;
-                        currentUser.careType = foundUser.careType || "OPD/IPD";
+                        currentUser.careType = foundUser.careType || "OPD";
                         updateProfileUI();
                     }
                     renderAllViews();
@@ -895,8 +854,8 @@
         function isUserTargeted(task, user) {
             if (task.assignee && task.assignee !== "ALL_IN_GROUP") return task.assignee === user.userId;
             const matchDept = (task.targetDept === "ALL") || (task.targetDept === user.department);
-            const userCare = user.careType || "OPD/IPD";
-            const matchCare = (task.targetCareType === "ALL") || !task.targetCareType || (userCare === "OPD/IPD") || (userCare === task.targetCareType);
+            const userCare = user.careType || "OPD";
+            const matchCare = (task.targetCareType === "ALL") || !task.targetCareType || (userCare === task.targetCareType);
             return matchDept && matchCare;
         }
 
@@ -904,7 +863,7 @@
             const sel = document.getElementById("taskAssignee");
             sel.innerHTML = `<option value="ALL_IN_GROUP">-- ทุกคนตามกลุ่มที่เลือก --</option>`;
             appData.users.forEach(u => {
-                sel.innerHTML += `<option value="${u.userId}">${u.fullName} (${u.department} | ${u.careType || 'OPD/IPD'})</option>`;
+                sel.innerHTML += `<option value="${u.userId}">${u.fullName} (${u.department} | ${u.careType || 'OPD'})</option>`;
             });
         }
 
@@ -956,6 +915,7 @@
             }).join('');
         }
 
+        // ปฏิทินงาน & วาระประชุม: แสดงหัวข้อตัวเล็กในช่องวันที่ กดดูรายละเอียดแบบ Modal ได้ทันที
         function initFullCalendar() {
             const calendarEl = document.getElementById('fullCalendarEl');
             calendarInstance = new FullCalendar.Calendar(calendarEl, {
@@ -969,10 +929,15 @@
                 events: [],
                 eventClick: function(info) {
                     const props = info.event.extendedProps;
-                    if (props.sourceType === 'TASK') viewSubmissionDetails(props.taskId);
-                    else if (props.sourceType === 'MEETING_RECORD') showMeetingRecordDetail(props.meeting);
+                    if (props.sourceType === 'TASK') {
+                        viewSubmissionDetails(props.taskId);
+                    } else if (props.sourceType === 'MEETING_RECORD') {
+                        showMeetingRecordModal(props.meeting);
+                    }
                 },
-                dateClick: function(info) { showEventsForDate(info.dateStr); }
+                dateClick: function(info) {
+                    showDateSummaryModal(info.dateStr);
+                }
             });
             calendarInstance.render();
         }
@@ -982,6 +947,7 @@
             const careFilter = document.getElementById("filterCalCareType").value;
             const events = [];
 
+            // 1) รายการจากชีต Tasks (ทั้งกำหนดส่งงาน และ นัดประชุม)
             appData.tasks.forEach(t => {
                 if (careFilter !== "ALL" && t.targetCareType !== "ALL" && t.targetCareType !== careFilter) return;
                 const isMeeting = t.type === "ประชุม";
@@ -989,19 +955,19 @@
                     id: t.taskId,
                     title: t.title,
                     start: t.dueDate,
-                    backgroundColor: isMeeting ? 'rgba(245, 158, 11, 0.88)' : 'rgba(16, 185, 129, 0.88)',
+                    backgroundColor: isMeeting ? 'rgba(245, 158, 11, 0.90)' : 'rgba(16, 185, 129, 0.90)',
                     textColor: isMeeting ? '#1e293b' : '#ffffff',
                     extendedProps: { sourceType: 'TASK', taskId: t.taskId }
                 });
             });
 
+            // 2) รายการจากชีต Meetings (บันทึกการประชุมทั้งหมด)
             appData.meetings.forEach(m => {
-                if (careFilter !== "ALL" && m.careType && m.careType !== "OPD/IPD" && m.careType !== careFilter) return;
                 events.push({
                     id: m.meetingId,
                     title: m.title,
                     start: m.meetingDate,
-                    backgroundColor: 'rgba(59, 130, 246, 0.88)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.90)',
                     textColor: '#ffffff',
                     extendedProps: { sourceType: 'MEETING_RECORD', meeting: m }
                 });
@@ -1011,80 +977,74 @@
             calendarInstance.addEventSource(events);
         }
 
-        function showEventsForDate(dateStr) {
-            const box = document.getElementById("selectedDateEventsBox");
-            const list = document.getElementById("selectedDateEventList");
-            document.getElementById("selectedDateTitle").innerText = `📌 รายการวันที่ ${formatDateTimeThai(dateStr).split(' ')[0]}`;
-
+        // เปิด Modal เมื่อกดที่ช่องวันที่ในปฏิทิน
+        function showDateSummaryModal(dateStr) {
             const dayTasks = appData.tasks.filter(t => t.dueDate && String(t.dueDate).startsWith(dateStr));
             const dayMeets = appData.meetings.filter(m => m.meetingDate && String(m.meetingDate).startsWith(dateStr));
 
-            if (dayTasks.length === 0 && dayMeets.length === 0) {
-                list.innerHTML = `<div class="text-slate-500">ไม่มีกำหนดส่งงานหรือวาระประชุมในวันนี้</div>`;
-                box.style.display = "block";
-                return;
-            }
+            if (dayTasks.length === 0 && dayMeets.length === 0) return;
 
+            document.getElementById("statusModalTitle").innerText = `🗓️ รายการวันที่ ${formatShortDateThai(dateStr)}`;
             let html = "";
+
             dayTasks.forEach(t => {
-                const subs = appData.submissions.filter(s => s.taskId === t.taskId);
                 html += `
-                    <div class="border border-emerald-200 rounded-4 p-2.5 mb-2 bg-white/80">
-                        <div class="d-flex justify-content-between">
-                            <span class="fw-bold">${t.type === 'ประชุม' ? '📅' : '📋'} ${t.title}</span>
+                    <div class="border border-emerald-200 rounded-4 p-3 mb-2 bg-emerald-50/60">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="badge ${t.type === 'ประชุม' ? 'bg-warning text-dark' : 'bg-success'}">${t.type}</span>
                             ${renderCareTypeBadge(t.targetCareType)}
                         </div>
-                        <div class="text-slate-600 my-1">${t.detail || '-'}</div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-emerald-700 fw-bold">${t.type === 'งาน' ? `ส่งแล้ว ${subs.length} คน` : 'วาระประชุม'}</span>
-                            <button class="btn btn-sm btn-success rounded-pill px-3 fw-bold" onclick="viewSubmissionDetails('${t.taskId}')">ดูรายละเอียด & โปรไฟล์ผู้ส่ง</button>
-                        </div>
+                        <div class="fw-bold text-lg">${t.title}</div>
+                        <div class="text-slate-600 text-sm mb-2">${t.detail || '-'}</div>
+                        <button class="btn btn-sm btn-success rounded-pill px-3 fw-bold" onclick="viewSubmissionDetails('${t.taskId}')">ดูรายละเอียด & ผู้ส่งไฟล์</button>
                     </div>
                 `;
             });
+
             dayMeets.forEach(m => {
+                const safeJson = encodeURIComponent(JSON.stringify(m));
                 html += `
-                    <div class="border border-blue-200 rounded-4 p-2.5 mb-2 bg-white/80">
-                        <div class="fw-bold text-primary">📘 บันทึกประชุม: ${m.title}</div>
-                        <div class="text-slate-600">${m.summary || '-'}</div>
-                        ${m.fileUrl ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-sm btn-outline-primary rounded-pill mt-1 fw-bold">📎 เปิดไฟล์รายงานประชุม</button>` : ''}
+                    <div class="border border-blue-200 rounded-4 p-3 mb-2 bg-blue-50/60">
+                        <span class="badge bg-primary mb-1">📘 บันทึกการประชุม</span>
+                        <div class="fw-bold text-lg">${m.title}</div>
+                        <div class="text-slate-600 text-sm mb-2">⏰ ${formatDateTimeThai(m.meetingDate)}</div>
+                        <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold" onclick="openMeetingDetailFromRow('${safeJson}')">เปิดดูรายละเอียด & ไฟล์แนบ</button>
                     </div>
                 `;
             });
-            list.innerHTML = html;
-            box.style.display = "block";
+
+            document.getElementById("statusModalBody").innerHTML = html;
+            new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
-        // เปิดดูรายละเอียดบันทึกการประชุม + ปุ่มเปิดไฟล์ + ปุ่มลบ (ใส่รหัส 3402)
-        function showMeetingRecordDetail(m) {
-            Swal.fire({
-                title: `📘 ${m.title}`,
-                html: `
-                    <div class="text-start text-sm">
-                        <p class="mb-1"><b>📅 วันที่ประชุม:</b> ${formatDateTimeThai(m.meetingDate)}</p>
-                        <p class="mb-1"><b>🏥 หน่วยงาน:</b> ${m.department} (${m.careType || 'OPD/IPD'})</p>
-                        <p class="mb-1"><b>👤 ผู้บันทึก:</b> ${m.createdBy || '-'}</p>
-                        <p class="mb-2"><b>📝 สรุปมติที่ประชุม:</b><br>${m.summary || '-'}</p>
-                        <p class="text-amber-700 mb-3"><b>📌 หมายเหตุ:</b> ${m.note || '-'}</p>
-                        <div class="d-grid gap-2">
-                            ${m.fileUrl ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-success rounded-pill fw-bold">📎 เปิดไฟล์วาระ / รายงานการประชุม</button>` : `<div class="text-center text-muted small">ไม่มีไฟล์แนบ</div>`}
-                            <button onclick="promptDeleteMeeting('${m.meetingId}', '${m.title.replace(/'/g, "\\'")}')" class="btn btn-outline-danger rounded-pill fw-bold">
-                                <i class="fa-solid fa-trash-can me-1"></i> ลบบันทึกการประชุมนี้
-                            </button>
-                        </div>
-                    </div>
-                `,
-                showConfirmButton: true,
-                confirmButtonText: 'ปิด',
-                confirmButtonColor: '#64748b'
-            });
+        // เปิด Modal แสดงรายละเอียดบันทึกการประชุม (ใช้ร่วมกันทั้งจากปฏิทิน และไอคอนรูปตาในตาราง)
+        function showMeetingRecordModal(m) {
+            document.getElementById("statusModalTitle").innerText = "📘 รายละเอียดบันทึกการประชุม";
+            const safeTitle = String(m.title || "").replace(/'/g, "\\'");
+
+            document.getElementById("statusModalBody").innerHTML = `
+                <div class="bg-blue-50/70 border border-blue-200 rounded-4 p-3 mb-3">
+                    <div class="text-xs text-primary fw-bold mb-1">📅 วันที่ประชุม: ${formatDateTimeThai(m.meetingDate)}</div>
+                    <h5 class="fw-bold text-slate-800 mb-2">${m.title || '-'}</h5>
+                    <div class="text-sm text-slate-600">👤 ผู้บันทึก: ${m.createdBy || '-'}</div>
+                </div>
+                <div class="d-grid gap-2">
+                    ${m.fileUrl
+                        ? `<button onclick="openDriveFile('${m.fileUrl}')" class="btn btn-success rounded-pill py-2 fw-bold">📎 เปิดไฟล์วาระ / รายงานการประชุม</button>`
+                        : `<div class="text-center text-slate-400 py-2 border rounded-4">ไม่มีไฟล์แนบในรายการนี้</div>`}
+                    <button onclick="promptDeleteMeeting('${m.meetingId}', '${safeTitle}')" class="btn btn-outline-danger rounded-pill py-2 fw-bold mt-2">
+                        <i class="fa-solid fa-trash-can me-1"></i> ลบบันทึกการประชุมนี้
+                    </button>
+                </div>
+            `;
+            new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
         // ยืนยันลบบันทึกการประชุมด้วยรหัสผ่าน 3402
         function promptDeleteMeeting(meetingId, title) {
             Swal.fire({
                 title: '🗑️ ยืนยันการลบบันทึกการประชุม',
-                html: `<p class="text-sm text-slate-600 mb-2">เรื่อง: <b>${title}</b><br>กรุณากรอกรหัสผ่าน 4 หลักเพื่อยืนยันการลบ</p>`,
+                html: `<p class="text-sm text-slate-600 mb-2">เรื่อง: <b>${title}</b><br>กรุณากรอกรหัสผ่านเพื่อยืนยันการลบ</p>`,
                 input: 'password',
                 inputPlaceholder: 'กรอกรหัสผ่าน...',
                 inputAttributes: { maxlength: 10, autocapitalize: 'off', autocorrect: 'off' },
@@ -1106,6 +1066,9 @@
                         const res = await postToGAS({ action: "deleteMeeting", meetingId: meetingId, pin: result.value });
                         if (res.status === "error") throw new Error(res.message);
                         Swal.close();
+                        const modalEl = document.getElementById('submissionStatusModal');
+                        const modalInst = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInst) modalInst.hide();
                         await loadAllData();
                         Swal.fire("ลบสำเร็จ", "ลบบันทึกการประชุมออกจากระบบแล้ว", "success");
                     } catch (err) {
@@ -1161,7 +1124,7 @@
 
                         ${t.type === 'งาน' ? `
                             <div class="mb-2">
-                                <div class="fw-bold text-emerald-700 text-sm mb-1">✅ ผู้ที่ส่งไฟล์แล้ว (${taskSubs.length}/${targetUsers.length} คน) — แตะชื่อเพื่อเปิดไฟล์:</div>
+                                <div class="fw-bold text-emerald-700 text-sm mb-1">✅ ผู้ที่ส่งไฟล์แล้ว (${taskSubs.length}/${targetUsers.length} คน):</div>
                                 <div class="d-flex flex-wrap gap-1.5">
                                     ${submittedAvatarsHtml || '<span class="text-slate-400 text-sm">ยังไม่มีผู้ส่งงาน</span>'}
                                 </div>
@@ -1229,16 +1192,15 @@
             new bootstrap.Modal(document.getElementById('submissionStatusModal')).show();
         }
 
-        // ตาราง DataTables 3 คอลัมน์ (วันที่ | หัวข้อ | ไอคอนรูปตา 👁️) + กรองตาม เดือน/ปี
+        // ตาราง DataTables บันทึกการประชุม: ลบแสดง 10 ออก แสดงทั้งหมดตามฟิลเตอร์ เดือน/ปี
         function renderMeetingsDataTable() {
-            const monthFilter = document.getElementById("filterMeetingMonthYear").value; // รูปแบบ YYYY-MM
+            const monthFilter = document.getElementById("filterMeetingMonthYear").value;
 
             let filteredList = [...(appData.meetings || [])];
             if (monthFilter) {
                 filteredList = filteredList.filter(m => String(m.meetingDate || "").startsWith(monthFilter));
             }
 
-            // เรียงเรื่องล่าสุดอยู่บนสุดเสมอ
             filteredList.sort((a, b) => {
                 const dateA = new Date(a.meetingDate).getTime() || 0;
                 const dateB = new Date(b.meetingDate).getTime() || 0;
@@ -1248,8 +1210,7 @@
             const tableRows = filteredList.map(m => {
                 const dateCell = `<span class="d-none">${m.meetingDate || ''}</span><div class="fw-bold text-emerald-700 leading-tight">${formatShortDateThai(m.meetingDate)}</div>`;
                 const titleCell = `
-                    <div class="fw-bold text-slate-800 leading-snug">${m.title || '-'}</div>
-                    <div class="text-xs text-slate-500">${m.department || ''} ${m.fileUrl ? '📎' : ''}</div>
+                    <div class="fw-bold text-slate-800 leading-snug">${m.title || '-'} ${m.fileUrl ? '📎' : ''}</div>
                 `;
                 const safeJson = encodeURIComponent(JSON.stringify(m));
                 const actionCell = `
@@ -1268,13 +1229,14 @@
                 meetingsTableInstance = $('#meetingsDataTable').DataTable({
                     data: tableRows,
                     order: [[0, 'desc']],
-                    pageLength: 10,
+                    paging: false,        // แสดงทั้งหมด ไม่แบ่งหน้า
+                    lengthChange: false,  // ลบช่อง "แสดง 10" ออก
                     autoWidth: false,
                     language: {
                         search: "ค้นหา:",
-                        lengthMenu: "แสดง _MENU_",
-                        info: "_START_-_END_ จาก _TOTAL_",
-                        paginate: { previous: "‹", next: "›" },
+                        info: "แสดงทั้งหมด _TOTAL_ เรื่อง",
+                        infoEmpty: "ไม่พบข้อมูล",
+                        infoFiltered: "(กรองจาก _MAX_ เรื่อง)",
                         zeroRecords: "ไม่พบบันทึกการประชุมในเดือนที่เลือก",
                         emptyTable: "ยังไม่มีบันทึกการประชุมในเดือนนี้"
                     }
@@ -1284,7 +1246,7 @@
 
         function openMeetingDetailFromRow(encodedJson) {
             const m = JSON.parse(decodeURIComponent(encodedJson));
-            showMeetingRecordDetail(m);
+            showMeetingRecordModal(m);
         }
 
         function renderMyTasks() {
@@ -1325,7 +1287,7 @@
 
         function renderMemberDirectory() {
             const careFilter = document.getElementById("filterDirCareType").value;
-            const filteredUsers = appData.users.filter(u => careFilter === "ALL" || u.careType === "OPD/IPD" || u.careType === careFilter);
+            const filteredUsers = appData.users.filter(u => careFilter === "ALL" || u.careType === careFilter);
             const container = document.getElementById("memberDirectoryList");
             if (filteredUsers.length === 0) {
                 container.innerHTML = `<div class="text-center text-slate-400 py-3">ยังไม่มีรายชื่อสมาชิกในกลุ่มนี้</div>`;
@@ -1400,7 +1362,7 @@
                 Swal.fire("สำเร็จ", "บันทึกข้อมูลลงชีตและปฏิทินเรียบร้อยแล้ว", "success");
             } catch (err) {
                 Swal.close();
-                Swal.fire("เกิดข้อผิดพลาด", "กรุณาลองใหม่อีกครั้ง: " + err.message, "error");
+                Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
             }
         }
 
@@ -1442,15 +1404,16 @@
                 });
             } catch (err) {
                 Swal.close();
-                Swal.fire("เกิดข้อผิดพลาด", "ไม่สามารถอัปโหลดไฟล์ได้: " + err.message, "error");
+                Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
             }
         }
 
+        // บันทึกการประชุม (ส่งแค่ วันที่ประชุม, หัวข้อ, แนบไฟล์)
         async function submitNewMeeting() {
             const meetDate = document.getElementById("meetDate").value;
             const meetTitle = document.getElementById("meetTitle").value.trim();
             if (!meetDate || !meetTitle) {
-                Swal.fire("ข้อมูลไม่ครบ", "กรุณาระบุวัน-เวลาและหัวข้อการประชุม", "warning");
+                Swal.fire("ข้อมูลไม่ครบ", "กรุณาระบุวันที่ประชุมและหัวข้อการประชุม", "warning");
                 return;
             }
 
@@ -1463,13 +1426,9 @@
                     action: "addMeeting",
                     meeting: {
                         meetingDate: meetDate,
-                        department: document.getElementById("meetDept").value,
-                        careType: document.getElementById("meetCareType").value,
                         title: meetTitle,
-                        summary: document.getElementById("meetSummary").value.trim(),
-                        note: document.getElementById("meetNote").value.trim(),
                         createdBy: currentUser.fullName,
-                        senderPictureUrl: currentUser.pictureUrl // ส่งรูปโปรไฟล์ผู้ส่งไปแสดงใน Flex
+                        senderPictureUrl: currentUser.pictureUrl
                     },
                     file: fileData
                 };
@@ -1480,10 +1439,8 @@
                 Swal.close();
                 bootstrap.Modal.getInstance(document.getElementById('addMeetingModal')).hide();
                 document.getElementById("meetTitle").value = "";
-                document.getElementById("meetSummary").value = "";
                 document.getElementById("meetFile").value = "";
 
-                // ปรับตัวกรองเดือนให้ตรงกับเดือนที่เพิ่งบันทึกเพื่อให้เห็นรายการในตารางทันที
                 document.getElementById("filterMeetingMonthYear").value = meetDate.substring(0, 7);
                 await loadAllData();
                 switchTab('tab-meetings');
@@ -1492,13 +1449,13 @@
                     title: "บันทึกสำเร็จ 🎉",
                     html: res.fileUrl
                         ? `บันทึกลงตารางและส่งการ์ด Flex พร้อมรูปโปรไฟล์เข้ากลุ่ม LINE แล้ว<br><button onclick="openDriveFile('${res.fileUrl}')" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>`
-                        : "บันทึกลงตารางเรียบร้อยแล้ว (ไม่มีไฟล์แนบจึงไม่ส่ง Flex)",
+                        : "บันทึกลงตารางเรียบร้อยแล้ว",
                     icon: "success",
                     confirmButtonColor: "#10b981"
                 });
             } catch (err) {
                 Swal.close();
-                Swal.fire("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกได้: " + err.message, "error");
+                Swal.fire("บันทึกไม่สำเร็จ", err.message, "error");
             }
         }
 
@@ -1508,7 +1465,6 @@
             document.getElementById(tabId).classList.add('active');
             document.getElementById('nav-' + tabId).classList.add('active');
 
-            // แสดงปุ่มลอย "+ เพิ่มงาน" เฉพาะหน้าส่งงาน (tab-mytasks) เท่านั้น
             const fab = document.getElementById("fabAddTaskBtn");
             fab.style.display = (tabId === 'tab-mytasks') ? 'flex' : 'none';
 
