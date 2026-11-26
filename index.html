@@ -346,6 +346,24 @@
         .scifi-eye-btn.sm { width: 34px; height: 34px; }
         .scifi-eye-btn.sm svg { width: 17px; height: 17px; }
 
+        /* ปุ่มประเภทในหน้าปฏิทิน + รายการในหน้าต่าง */
+        .cal-cat { border: none; border-radius: 9999px; padding: 6px 13px; font-weight: 800; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(15,23,42,0.12); }
+        .cal-cat:active { transform: scale(0.95); }
+        .cal-item { width: 100%; display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 8px 10px; margin-bottom: 8px; }
+        .cal-item:active { transform: scale(0.98); }
+        .cal-item-date { width: 48px; flex-shrink: 0; border: 2px solid; border-radius: 12px; text-align: center; padding: 2px 0; }
+        .cal-item-date .wd { font-size: 0.68rem; font-weight: 700; color: #64748b; line-height: 1.2; }
+        .cal-item-date .dd { font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
+
+        /* หน้าส่งงาน: หัวข้อส่วนและหัวเดือน */
+        .mytask-section { font-weight: 800; color: #0f172a; font-size: 1rem; margin: 10px 2px 4px; }
+        .mytask-section span, .month-head span { font-weight: 700; color: #94a3b8; font-size: 0.8rem; }
+        .month-head { display: inline-block; font-weight: 800; color: #065f46; font-size: 0.88rem; background: rgba(209,250,229,0.85); border-radius: 9999px; padding: 2px 12px; margin: 6px 0 8px; }
+
+        /* รายการไฟล์แนบในหน้าต่างสั่งงาน */
+        .file-chip { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #a7f3d0; border-radius: 12px; padding: 5px 8px; font-size: 0.88rem; min-width: 0; }
+        .file-chip-x { border: none; background: #fee2e2; color: #dc2626; border-radius: 50%; width: 24px; height: 24px; flex-shrink: 0; font-size: 0.75rem; line-height: 1; }
+
         /* กล่องข้อมูลผู้ส่งในหน้าต่างส่งงาน */
         .submitter-card { background: rgba(239, 246, 255, 0.9); border: 1px solid #bfdbfe; border-radius: 20px; padding: 10px 12px; }
         .submitter-card img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.45); flex-shrink: 0; background: #fff; }
@@ -425,11 +443,10 @@
                 </select>
             </div>
 
-            <div class="d-flex flex-wrap gap-1.5 mb-2">
-                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(16,185,129,0.9);">📋 กำหนดส่งงาน</span>
-                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(245,158,11,0.92); color:#000;">📅 นัดประชุม</span>
-                <span class="badge rounded-pill px-2.5 py-1 text-xs" style="background:rgba(59,130,246,0.9);">📘 บันทึกประชุม</span>
-                <span class="text-xs text-slate-500 ms-auto align-self-center">* แตะที่หัวข้อเพื่อดูรายละเอียด</span>
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <button type="button" class="cal-cat" style="background:rgba(16,185,129,0.92);color:#fff;" onclick="showCalendarCategory('TASK')">📋 กำหนดส่งงาน</button>
+                <button type="button" class="cal-cat" style="background:rgba(245,158,11,0.92);color:#1e293b;" onclick="showCalendarCategory('APPOINT')">📅 นัดประชุม</button>
+                <button type="button" class="cal-cat" style="background:rgba(59,130,246,0.9);color:#fff;" onclick="showCalendarCategory('RECORD')">📘 บันทึกประชุม</button>
             </div>
 
             <div class="calendar-glass-wrapper mb-3">
@@ -489,7 +506,7 @@
                         <thead class="table-success">
                             <tr>
                                 <th style="width: 28%;">วันที่</th>
-                                <th style="width: 56%;">หัวข้อ</th>
+                                <th style="width: 56%;">หัวข้อรายงานการประชุม</th>
                                 <th style="width: 16%; text-align: center;">ดู/ลบ</th>
                             </tr>
                         </thead>
@@ -501,7 +518,10 @@
 
         <!-- TAB 5: ส่งงานของฉัน -->
         <div id="tab-mytasks" class="tab-pane-section">
-            <h5 class="fw-bold text-slate-800 mb-2">📤 งานที่ได้รับมอบหมาย & ส่งไฟล์งาน</h5>
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                <h5 class="fw-bold text-slate-800 mb-0">📤 งานที่ได้รับมอบหมาย & ส่งไฟล์งาน</h5>
+                <select id="filterMyTaskYear" class="form-select form-select-sm w-auto rounded-pill bg-white/90 fw-bold flex-shrink-0" onchange="renderMyTasks()"></select>
+            </div>
             <div id="myTasksContainer"></div>
         </div>
 
@@ -595,8 +615,10 @@
 
                     <!-- เอกสารประกอบ อยู่ต่อท้าย รายละเอียด / วาระ / สถานที่ -->
                     <div class="mb-2">
-                        <label class="form-label fw-bold mb-1">📎 เอกสารประกอบ (PDF / Word / รูปภาพ)</label>
-                        <input type="file" id="taskAttachmentFile" class="form-control rounded-4">
+                        <label class="form-label fw-bold mb-1">📎 เอกสารประกอบ (PDF / Word / รูปภาพ) <span class="text-xs text-slate-500 fw-semibold">สูงสุด 3 ไฟล์</span></label>
+                        <div id="taskFileList" class="d-flex flex-column gap-1 mb-1"></div>
+                        <input type="file" id="taskAttachmentFile" class="d-none" multiple onchange="addTaskFiles(this)">
+                        <button type="button" id="taskAddFileBtn" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold" onclick="document.getElementById('taskAttachmentFile').click()">➕ เพิ่มไฟล์แนบ (0/3)</button>
                     </div>
 
                     <!-- วัน-เวลา กำหนดส่ง อยู่ถัดจากเอกสารประกอบ -->
@@ -809,6 +831,7 @@
 
         document.addEventListener("DOMContentLoaded", async () => {
             setThaiDateHeader();
+            document.getElementById("filterMeetingMonthYear").value = currentYearMonth(); // ค่าเริ่มต้น: เดือน/ปีปัจจุบัน
             initFullCalendar();
             await initLiffApp();
             await loadAllData();
@@ -819,6 +842,11 @@
             const cleaned = String(fullName).trim();
             const parts = cleaned.split(/\s+/);
             return parts[0] || cleaned;
+        }
+
+        function currentYearMonth() {
+            const d = new Date();
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
         }
 
         function clearMeetingMonthFilter() {
@@ -1205,8 +1233,8 @@
             calendarInstance = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'th',
-                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,listMonth' },
-                buttonText: { today: 'วันนี้', month: 'เดือน', list: 'รายการ' },
+                headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+                buttonText: { today: 'วันนี้' },
                 height: 'auto',
                 dayMaxEvents: 3,
                 displayEventTime: false,
@@ -1396,8 +1424,8 @@
 
                         <div class="mb-2">${t.type === 'ประชุม' ? renderReaderStrip(t) : renderSubmitterStrip(t)}</div>
 
-                        <div class="d-flex justify-content-end gap-1.5 pt-2 border-t border-slate-200/70">
-                            ${t.attachmentUrl ? `<button onclick="openDriveFile(decodeURIComponent('${enc(t.attachmentUrl)}'))" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📎 ไฟล์คำสั่ง</button>` : ''}
+                        <div class="d-flex flex-wrap justify-content-end gap-1.5 pt-2 border-t border-slate-200/70">
+                            ${renderAttachmentButtons(t, 'btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold text-truncate', 'max-width:100%;')}
                             <button class="btn btn-sm btn-success rounded-pill px-3 fw-bold" onclick="viewSubmissionDetails('${t.taskId}')">🔍 ดูรายละเอียด & เช็กทุกคน</button>
                         </div>
                     </div>
@@ -1421,7 +1449,7 @@
                     <h5 class="fw-bold mt-1 mb-1">${task.title}</h5>
                     <p class="text-slate-600 mb-2">${task.detail || 'ไม่มีรายละเอียดเพิ่มเติม'}</p>
                     <div class="text-rose-600 fw-bold">⏰ กำหนดเวลา: ${formatDateTimeThai(task.dueDate)}</div>
-                    ${task.attachmentUrl ? `<button onclick="openDriveFile(decodeURIComponent('${enc(task.attachmentUrl)}'))" class="btn btn-sm btn-outline-dark rounded-pill mt-2 px-3 fw-bold">📎 เปิดไฟล์คำสั่ง/วาระประชุม</button>` : ''}
+                    ${getTaskAttachments(task).length ? `<div class="d-flex flex-wrap gap-1.5 mt-2">${renderAttachmentButtons(task, 'btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold text-truncate', 'max-width:100%;')}</div>` : ''}
                 </div>
                 <div class="mb-3">${isMeeting ? renderReaderStrip(task) : renderSubmitterStrip(task)}</div>
                 <h6 class="fw-bold mb-2">👥 รายชื่อผู้รับผิดชอบ (${isMeeting ? `เปิดอ่านแล้ว ${targetUsers.filter(u => taskReads.some(r => r.userId === u.userId)).length}/${targetUsers.length} คน` : `${taskSubs.length}/${targetUsers.length} คนส่งแล้ว`})</h6>
@@ -1701,38 +1729,195 @@
             showMeetingRecordModal(m);
         }
 
+        // ======================= หน้าส่งงาน: ตัวกรองปี + จัดกลุ่มตามเดือน (ใกล้กำหนดอยู่บนสุด) =======================
+        function refreshMyTaskYearOptions() {
+            const sel = document.getElementById("filterMyTaskYear");
+            const keep = sel.value;
+            const cur = new Date().getFullYear();
+            const years = new Set();
+            for (let y = cur - 3; y <= cur + 7; y++) years.add(y);
+            (appData.tasks || []).forEach(t => { const d = parseFlexibleDate(t.dueDate); if (d) years.add(d.getFullYear()); });
+            const list = Array.from(years).sort((a, b) => b - a);
+            sel.innerHTML = list.map(y => `<option value="${y}">📅 ปี ${y + 543}</option>`).join('');
+            sel.value = (keep && years.has(Number(keep))) ? keep : String(cur); // ไม่เลือก = ปีปัจจุบัน
+        }
+
         function renderMyTasks() {
-            const myTasks = appData.tasks.filter(t => t.type === "งาน" && isUserTargeted(t, currentUser));
+            refreshMyTaskYearOptions();
+            const year = Number(document.getElementById("filterMyTaskYear").value);
             const mySubs = appData.submissions.filter(s => s.userId === currentUser.userId);
             const container = document.getElementById("myTasksContainer");
+            const myTasks = appData.tasks.filter(t => {
+                if (t.type !== "งาน" || !isUserTargeted(t, currentUser)) return false;
+                const d = parseFlexibleDate(t.dueDate);
+                return d && d.getFullYear() === year;
+            });
 
             if (myTasks.length === 0) {
-                container.innerHTML = `<div class="glass-card p-4 text-center text-slate-500">🎉 ไม่มีงานค้างส่งในขณะนี้</div>`;
+                container.innerHTML = `<div class="glass-card p-4 text-center text-slate-500">🎉 ไม่มีงานที่ได้รับมอบหมายในปี ${year + 543}</div>`;
                 return;
             }
 
-            container.innerHTML = myTasks.map(t => {
-                const sub = mySubs.find(s => s.taskId === t.taskId);
-                return `
-                    <div class="task-glass-item">
-                        <div class="d-flex justify-content-between flex-wrap gap-1 mb-1">
-                            <div class="d-flex flex-wrap gap-1 justify-content-end">${renderTargetBadges(t)}</div>
-                            ${sub ? `<span class="badge bg-success rounded-pill px-2.5">✅ ส่งเรียบร้อยแล้ว</span>` : `<span class="badge bg-danger rounded-pill px-2.5">⏳ รอส่งงาน</span>`}
-                        </div>
-                        <div class="fw-bold text-lg mt-1">${t.title}</div>
-                        <div class="text-slate-600 mb-2">${t.detail || '-'}</div>
-                        <div class="text-rose-600 fw-bold text-sm mb-2">⏰ กำหนดส่ง: ${formatDateTimeThai(t.dueDate)}</div>
-                        <div class="mb-2">${renderSubmitterStrip(t)}</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            ${t.attachmentUrl ? `<button onclick="openDriveFile(decodeURIComponent('${enc(t.attachmentUrl)}'))" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold">📥 โหลดไฟล์ต้นเรื่อง</button>` : ''}
-                            ${sub ? `<button onclick="showSubmissionPerson('${enc(sub.subId)}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 ดูไฟล์ที่ส่งแล้ว</button>` : ''}
-                            <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold" onclick="openSubmitWorkModal('${t.taskId}')">
-                                ${sub ? '🔄 อัปเดตไฟล์ส่งงานใหม่' : '📤 อัปโหลดไฟล์ส่งงาน'}
-                            </button>
-                        </div>
+            const now = new Date();
+            const upcoming = myTasks.filter(t => parseFlexibleDate(t.dueDate) >= now).sort((a, b) => timeOf(a.dueDate) - timeOf(b.dueDate));
+            const past = myTasks.filter(t => parseFlexibleDate(t.dueDate) < now).sort((a, b) => timeOf(b.dueDate) - timeOf(a.dueDate));
+
+            const renderSection = (title, list, isPast) => {
+                if (!list.length) return "";
+                let html = `<div class="mytask-section">${title} <span>${list.length} งาน</span></div>`;
+                let lastMonth = "";
+                list.forEach(t => {
+                    const d = parseFlexibleDate(t.dueDate);
+                    const mLabel = d.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+                    if (mLabel !== lastMonth) {
+                        const n = list.filter(x => parseFlexibleDate(x.dueDate).toLocaleDateString('th-TH', { month: 'long', year: 'numeric' }) === mLabel).length;
+                        html += `<div class="month-head">🗓️ ${mLabel} <span>${n} งาน</span></div>`;
+                        lastMonth = mLabel;
+                    }
+                    html += renderMyTaskCard(t, mySubs.find(s => s.taskId === t.taskId), isPast);
+                });
+                return html;
+            };
+            container.innerHTML = renderSection("⏳ ใกล้ถึงกำหนดส่ง", upcoming, false) + renderSection("🗂️ ผ่านกำหนดแล้ว", past, true);
+        }
+
+        function renderMyTaskCard(t, sub, isPast) {
+            const status = sub
+                ? `<span class="badge bg-success rounded-pill px-2.5">✅ ส่งเรียบร้อยแล้ว</span>`
+                : (isPast ? `<span class="badge bg-danger rounded-pill px-2.5">⚠️ เลยกำหนด ยังไม่ส่ง</span>` : `<span class="badge bg-warning text-dark rounded-pill px-2.5">⏳ รอส่งงาน</span>`);
+            return `
+                <div class="task-glass-item">
+                    <div class="d-flex justify-content-between flex-wrap gap-1 mb-1">
+                        <div class="d-flex flex-wrap gap-1">${renderTargetBadges(t)}</div>
+                        ${status}
                     </div>
-                `;
-            }).join('');
+                    <div class="fw-bold text-lg mt-1">${esc(t.title)}</div>
+                    <div class="text-slate-600 mb-2">${esc(t.detail || '-')}</div>
+                    <div class="text-rose-600 fw-bold text-sm mb-2">⏰ กำหนดส่ง: ${formatDateTimeThai(t.dueDate)}</div>
+                    <div class="mb-2">${renderSubmitterStrip(t)}</div>
+                    <div class="d-flex flex-wrap gap-2">
+                        ${renderAttachmentButtons(t, 'btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold text-truncate', 'max-width:100%;')}
+                        ${sub ? `<button onclick="showSubmissionPerson('${enc(sub.subId)}')" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">📎 ดูไฟล์ที่ส่งแล้ว</button>` : ''}
+                        <button class="btn btn-sm btn-primary rounded-pill px-4 fw-bold" onclick="openSubmitWorkModal(decodeURIComponent('${enc(t.taskId)}'))">
+                            ${sub ? '🔄 อัปเดตไฟล์ส่งงานใหม่' : '📤 อัปโหลดไฟล์ส่งงาน'}
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        // ======================= ไฟล์แนบของงาน (สูงสุด 3 ไฟล์) =======================
+        function getTaskAttachments(t) {
+            return [[t.attachmentUrl, t.attachmentName], [t.attachmentUrl2, t.attachmentName2], [t.attachmentUrl3, t.attachmentName3]]
+                .filter(a => /^https?:\/\//i.test(String(a[0] || "")))
+                .map((a, i) => ({ url: a[0], name: a[1] || ("ไฟล์แนบ " + (i + 1)) }));
+        }
+
+        function fileIcon(name) {
+            const ext = String(name || "").split(".").pop().toLowerCase();
+            if (["jpg", "jpeg", "png", "gif", "webp", "heic"].includes(ext)) return "🖼️";
+            if (ext === "pdf") return "📕";
+            if (["doc", "docx"].includes(ext)) return "📘";
+            if (["xls", "xlsx", "csv"].includes(ext)) return "📗";
+            if (["ppt", "pptx"].includes(ext)) return "📙";
+            return "📎";
+        }
+
+        function renderAttachmentButtons(t, cls, style) {
+            return getTaskAttachments(t).map(a =>
+                `<button onclick="openDriveFile(decodeURIComponent('${enc(a.url)}'))" class="${cls}" style="${style || ''}" title="${esc(a.name)}">${fileIcon(a.name)} ${esc(a.name.length > 24 ? a.name.slice(0, 22) + '…' : a.name)}</button>`
+            ).join('');
+        }
+
+        let taskFiles = [];
+        function addTaskFiles(input) {
+            const files = Array.from(input.files || []);
+            for (const f of files) {
+                if (taskFiles.length >= 3) { Swal.fire("แนบได้สูงสุด 3 ไฟล์", "หากต้องการเปลี่ยนไฟล์ ให้กด ✕ ลบไฟล์เดิมก่อน", "warning"); break; }
+                if (!checkFileSize(f)) continue;
+                taskFiles.push(f);
+            }
+            input.value = "";
+            renderTaskFileList();
+        }
+        function removeTaskFile(i) { taskFiles.splice(i, 1); renderTaskFileList(); }
+        function renderTaskFileList() {
+            document.getElementById("taskFileList").innerHTML = taskFiles.map((f, i) => `
+                <div class="file-chip">
+                    <span>${fileIcon(f.name)}</span>
+                    <span class="text-truncate flex-grow-1">${esc(f.name)}</span>
+                    <small class="text-slate-500 flex-shrink-0">${(f.size / 1048576).toFixed(1)} MB</small>
+                    <button type="button" class="file-chip-x" onclick="removeTaskFile(${i})" aria-label="ลบไฟล์">✕</button>
+                </div>`).join('');
+            const btn = document.getElementById("taskAddFileBtn");
+            btn.disabled = taskFiles.length >= 3;
+            btn.innerText = taskFiles.length >= 3 ? "✅ ครบ 3 ไฟล์แล้ว" : `➕ เพิ่มไฟล์แนบ (${taskFiles.length}/3)`;
+        }
+
+        // ======================= ปฏิทิน: รายการตามประเภทของเดือนที่แสดง =======================
+        function showCalendarCategory(kind) {
+            const view = calendarInstance && calendarInstance.view;
+            const today = new Date();
+            const start = view ? view.currentStart : new Date(today.getFullYear(), today.getMonth(), 1);
+            const end = view ? view.currentEnd : new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            const monthLabel = start.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+            const careFilter = document.getElementById("filterCalCareType").value;
+            const inRange = (v) => { const d = parseFlexibleDate(v); return d && d >= start && d < end; };
+            const meta = {
+                TASK: { title: "📋 กำหนดส่งงาน", color: "#10b981", bg: "#ecfdf5" },
+                APPOINT: { title: "📅 นัดประชุม", color: "#f59e0b", bg: "#fffbeb" },
+                RECORD: { title: "📘 บันทึกการประชุม", color: "#3b82f6", bg: "#eff6ff" }
+            }[kind];
+
+            let items;
+            if (kind === "RECORD") {
+                items = (appData.meetings || []).filter(m => inRange(m.meetingDate)).map(m => ({
+                    date: m.meetingDate, title: m.title,
+                    sub: m.fileUrl ? "📎 มีไฟล์รายงาน" : "ไม่มีไฟล์แนบ",
+                    action: `openMeetingDetailFromRow('${enc(JSON.stringify(m))}')`
+                }));
+            } else {
+                items = (appData.tasks || []).filter(t => (kind === "TASK" ? t.type !== "ประชุม" : t.type === "ประชุม") && inRange(t.dueDate) &&
+                    (careFilter === "ALL" || taskTouchesCare(t, careFilter))).map(t => {
+                    const targets = (appData.users || []).filter(u => isUserTargeted(t, u)).length;
+                    const sub = kind === "TASK"
+                        ? `✅ ส่งแล้ว ${(appData.submissions || []).filter(s => s.taskId === t.taskId).length}/${targets} คน`
+                        : `👁️ เปิดอ่านแล้ว ${getTaskReads(t.taskId).length} คน`;
+                    return { date: t.dueDate, title: t.title, sub, action: `viewSubmissionDetails(decodeURIComponent('${enc(t.taskId)}'))` };
+                });
+            }
+            items.sort((a, b) => timeOf(a.date) - timeOf(b.date));
+
+            document.getElementById("statusModalTitle").innerText = `${meta.title} • ${monthLabel}`;
+            document.getElementById("statusModalBody").innerHTML = items.length
+                ? `<div class="text-sm text-slate-500 mb-2">ทั้งหมด ${items.length} รายการ</div>` + items.map(it => {
+                    const d = parseFlexibleDate(it.date);
+                    const hasTime = d && (d.getHours() || d.getMinutes());
+                    return `
+                    <button type="button" class="cal-item" onclick="${it.action}">
+                        <div class="cal-item-date" style="border-color:${meta.color};background:${meta.bg};">
+                            <div class="wd">${d.toLocaleDateString('th-TH', { weekday: 'short' })}</div>
+                            <div class="dd" style="color:${meta.color};">${d.getDate()}</div>
+                        </div>
+                        <div class="min-w-0 text-start flex-grow-1">
+                            <div class="fw-bold text-slate-800 text-truncate">${esc(it.title || '-')}</div>
+                            <div class="text-xs text-slate-500">${hasTime ? '⏰ ' + d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น. • ' : ''}${it.sub}</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                    </button>`;
+                }).join('')
+                : `<div class="text-center text-slate-400 py-4">ไม่มีรายการในเดือนนี้</div>`;
+            showModal('submissionStatusModal');
+        }
+
+        // ปิดหน้าต่าง LINE อัตโนมัติ (เฉพาะเมื่อเปิดในแอป LINE)
+        function closeLiffSoon(ms) {
+            try {
+                if (typeof liff !== "undefined" && liff.isInClient && liff.isInClient()) {
+                    setTimeout(() => { try { liff.closeWindow(); } catch (e) {} }, ms || 1600);
+                    return true;
+                }
+            } catch (e) {}
+            return false;
         }
 
         // ======================= รายชื่อหัวหน้าตึก (แยก OPD / IPD) =======================
@@ -1763,9 +1948,7 @@
                             </div>
                         </div>
                         <div class="d-flex gap-1 flex-shrink-0">
-                            <button type="button" class="scifi-eye-btn sm" title="เปิดดู" onclick="viewMember('${id}')">${EYE_SVG}</button>
-                            <button type="button" class="mini-btn edit" title="แก้ไข" onclick="editMember('${id}')"><i class="fa-solid fa-pen"></i></button>
-                            <button type="button" class="mini-btn del" title="ลบ" onclick="deleteMember('${id}')"><i class="fa-solid fa-trash-can"></i></button>
+                            <button type="button" class="scifi-eye-btn sm" title="เปิดดู / แก้ไข / ลบ" onclick="viewMember('${id}')">${EYE_SVG}</button>
                         </div>
                     </div>`;
                 }).join('');
@@ -1957,23 +2140,26 @@
                 return;
             }
 
-            const fileInput = document.getElementById("taskAttachmentFile");
-            if (fileInput.files.length > 0 && !checkFileSize(fileInput.files[0])) return;
-
             Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            let fileData = null;
+            let filesData = [];
             try {
-                fileData = fileInput.files.length > 0 ? await prepareUpload(fileInput.files[0]) : null;
+                filesData = await Promise.all(taskFiles.slice(0, 3).map(f => prepareUpload(f)));
             } catch (e) {
                 Swal.fire("อ่านไฟล์ไม่สำเร็จ", "กรุณาเลือกไฟล์ใหม่อีกครั้ง", "error");
                 return;
             }
+            const totalMB = filesData.reduce((n, f) => n + (f.base64 || "").length * 0.75, 0) / 1048576;
+            if (totalMB > 35) {
+                Swal.fire("ไฟล์รวมกันใหญ่เกินไป", `ขนาดไฟล์รวมต้องไม่เกิน 35 MB (ตอนนี้ ${totalMB.toFixed(1)} MB)`, "warning");
+                return;
+            }
 
             const sel = selectedTargets;
+            const taskType = document.getElementById("taskType").value;
             const payload = {
                 action: "createTask",
                 task: {
-                    type: document.getElementById("taskType").value,
+                    type: taskType,
                     title: title,
                     detail: document.getElementById("taskDetail").value.trim(),
                     targets: targetsToString(sel),
@@ -1982,9 +2168,10 @@
                     targetCareType: sel.all ? "ALL" : sel.cares.join(", "),
                     assignee: "ALL_IN_GROUP",
                     dueDate: dueDate,
-                    createdBy: currentUser.fullName || currentUser.displayName
+                    createdBy: currentUser.fullName || currentUser.displayName,
+                    createdByPictureUrl: currentUser.pictureUrl
                 },
-                file: fileData
+                files: filesData
             };
 
             const res = await postToGAS(payload);
@@ -2000,11 +2187,22 @@
             hideModal('createTaskModal');
             document.getElementById("taskTitle").value = "";
             document.getElementById("taskDetail").value = "";
-            document.getElementById("taskAttachmentFile").value = "";
+            taskFiles = [];
+            renderTaskFileList();
             selectedTargets = { all: true, cares: [], depts: [] };
             renderTargetPicker();
             updateTargetUsersPreview();
-            Swal.fire("สำเร็จ", "บันทึกข้อมูลลงชีตและปฏิทินเรียบร้อยแล้ว และส่งแจ้งเตือนเข้า LINE แล้ว", "success");
+
+            // วาระการประชุม: ปิดหน้าต่างอัตโนมัติ แล้วการ์ด Flex จะเข้ากลุ่ม LINE
+            const willClose = taskType === "ประชุม" && closeLiffSoon(1600);
+            Swal.fire({
+                title: "สำเร็จ 🎉",
+                html: "บันทึกลงชีตและปฏิทินแล้ว และส่งการ์ดแจ้งเตือนเข้ากลุ่ม LINE แล้ว" + (willClose ? '<div class="text-sm text-slate-500 mt-2">กำลังปิดหน้าต่าง...</div>' : ''),
+                icon: "success",
+                confirmButtonColor: "#10b981",
+                showConfirmButton: !willClose,
+                timer: willClose ? 1500 : undefined
+            });
         }
 
         function checkFileSize(file) {
@@ -2157,7 +2355,7 @@
             }
 
             // ตรวจซ้ำจากชีตจริงว่าบันทึกแล้ว
-            document.getElementById("filterMeetingMonthYear").value = "";
+            document.getElementById("filterMeetingMonthYear").value = meetDate.slice(0, 7);
             await loadAllData();
             const saved = (appData.meetings || []).find(m => (res.meetingId && m.meetingId === res.meetingId) ||
                 (m.title === meetTitle && String(m.meetingDate).startsWith(meetDate.slice(0, 10))));
@@ -2171,12 +2369,17 @@
             document.getElementById("meetFile").value = "";
             switchTab('tab-meetings');
 
+            // ปิดหน้าต่างอัตโนมัติ แล้วการ์ด Flex จะเข้ากลุ่ม LINE
+            const willClose = closeLiffSoon(1600);
             Swal.fire({
                 title: "บันทึกสำเร็จ 🎉",
-                html: `บันทึกลงตารางและส่งการ์ด Flex เข้า LINE แล้ว
-                    ${saved.fileUrl ? `<br><button onclick="openDriveFile(decodeURIComponent('${enc(saved.fileUrl)}'))" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>` : ''}`,
+                html: `บันทึกลงตารางและส่งการ์ด Flex เข้ากลุ่ม LINE แล้ว
+                    ${willClose ? '<div class="text-sm text-slate-500 mt-2">กำลังปิดหน้าต่าง...</div>'
+                        : (saved.fileUrl ? `<br><button onclick="openDriveFile(decodeURIComponent('${enc(saved.fileUrl)}'))" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>` : '')}`,
                 icon: "success",
-                confirmButtonColor: "#10b981"
+                confirmButtonColor: "#10b981",
+                showConfirmButton: !willClose,
+                timer: willClose ? 1500 : undefined
             });
         }
 
