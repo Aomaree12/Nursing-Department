@@ -364,6 +364,21 @@
         .file-chip { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #a7f3d0; border-radius: 12px; padding: 5px 8px; font-size: 0.88rem; min-width: 0; }
         .file-chip-x { border: none; background: #fee2e2; color: #dc2626; border-radius: 50%; width: 24px; height: 24px; flex-shrink: 0; font-size: 0.75rem; line-height: 1; }
 
+        /* รูปผู้อ่านใต้หัวข้อรายงานการประชุม */
+        .mini-readers { display: flex; align-items: center; flex-wrap: wrap; margin-top: 4px; padding-left: 6px; }
+        .mini-readers img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; margin-left: -6px; box-shadow: 0 0 0 1px rgba(245,158,11,0.7); background: #fff; cursor: pointer; }
+        .mini-readers .more { font-size: 0.7rem; font-weight: 800; color: #92400e; margin-left: 3px; }
+        .mini-readers .cnt { font-size: 0.72rem; font-weight: 700; color: #b45309; margin-left: 6px; }
+
+        /* ปุ่มปิดแอป มุมบนขวา */
+        .app-close-btn {
+            position: absolute; top: 12px; right: 12px; z-index: 5; width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 800; line-height: 1;
+            color: #fff; background: rgba(255,255,255,0.22); border: 1.5px solid rgba(255,255,255,0.7);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        .app-close-btn:active { transform: scale(0.9); }
+
         /* กล่องข้อมูลผู้ส่งในหน้าต่างส่งงาน */
         .submitter-card { background: rgba(239, 246, 255, 0.9); border: 1px solid #bfdbfe; border-radius: 20px; padding: 10px 12px; }
         .submitter-card img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.45); flex-shrink: 0; background: #fff; }
@@ -373,7 +388,8 @@
 
     <!-- HEADER -->
     <div class="app-header">
-        <div class="max-w-3xl mx-auto">
+        <button type="button" class="app-close-btn" onclick="closeApp()" aria-label="ปิด" title="ปิด">✕</button>
+        <div class="max-w-3xl mx-auto" style="padding-right: 40px;">
             <div class="d-flex align-items-center gap-3">
                 <img id="headerAvatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="profile-avatar" alt="Profile">
                 <div class="flex-grow-1 min-w-0">
@@ -536,7 +552,7 @@
                     <input type="text" id="inputFullName" class="form-control rounded-4 mb-3">
 
                     <label class="form-label fw-bold mb-1">🏥 หน่วยงาน</label>
-                    <select id="inputDepartment" class="form-select rounded-4 mb-3">
+                    <select id="inputDepartment" class="form-select rounded-4 mb-2" onchange="onProfileDeptChange()">
                         <option value="หน่วยไตเทียม">หน่วยไตเทียม</option>
                         <option value="กลุ่มการพยาบาล">กลุ่มการพยาบาล</option>
                         <option value="งานควบคุมการติดเชื้อ (IC)">งานควบคุมการติดเชื้อ (IC)</option>
@@ -545,11 +561,14 @@
                         <option value="หอผู้ป่วยใน (IPD)">หอผู้ป่วยใน (IPD)</option>
                         <option value="อื่นๆ">อื่นๆ</option>
                     </select>
+                    <input type="text" id="inputDepartmentNew" class="form-control rounded-4 mb-2 d-none" placeholder="ชื่อหน่วยงานใหม่">
+                    <div class="mb-2"></div>
 
                     <label class="form-label fw-bold mb-1">🏷️ ประเภทบริการ</label>
                     <select id="inputCareType" class="form-select rounded-4 mb-3">
                         <option value="OPD">🩺 OPD</option>
                         <option value="IPD">🛏️ IPD</option>
+                        <option value="">⭐ ไม่ระบุ (หัวหน้าพยาบาล / รองฯ)</option>
                     </select>
 
                     <button class="btn btn-success w-100 rounded-pill py-2.5 fw-bold shadow-sm" onclick="saveUserProfile()">
@@ -564,6 +583,7 @@
                     <option value="ALL">ทั้งหมด</option>
                     <option value="OPD">เฉพาะ OPD</option>
                     <option value="IPD">เฉพาะ IPD</option>
+                    <option value="NONE">ไม่ระบุประเภท</option>
                 </select>
             </div>
             <div id="memberDirectoryList" class="glass-card p-3"></div>
@@ -764,7 +784,7 @@
             displayName: "สมาชิกหน่วยงาน",
             fullName: localStorage.getItem("user_fullName") || "",
             department: localStorage.getItem("user_department") || "",
-            careType: localStorage.getItem("user_careType") || "OPD",
+            careType: (localStorage.getItem("user_careType") !== null ? localStorage.getItem("user_careType") : "OPD"),
             pictureUrl: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
             isLineUser: false
         };
@@ -810,8 +830,13 @@
             const id = driveId(url);
             return (id && /drive\.google\.com/i.test(url)) ? `https://drive.google.com/uc?export=download&id=${id}` : url;
         }
-        function careKey(c) { return c === "IPD" ? "IPD" : (c === "OPD" || !c ? "OPD" : "OTHER"); }
-        function careLabel(k) { return k === "IPD" ? "🛏️ IPD" : k === "OPD" ? "🩺 OPD" : "📌 อื่นๆ"; }
+        // ประเภทบริการ: OPD / IPD / ว่าง (ไม่ระบุ เช่น หัวหน้าพยาบาล/รองฯ)
+        function careKey(c) { return c === "IPD" ? "IPD" : c === "OPD" ? "OPD" : "NONE"; }
+        function careLabel(k) { return k === "IPD" ? "🛏️ IPD" : k === "OPD" ? "🩺 OPD" : "⭐ ไม่ระบุประเภท"; }
+        function renderUserCareBadge(c) {
+            if (c === "OPD" || c === "IPD") return renderCareTypeBadge(c);
+            return `<span class="badge-dept" style="background:#fef3c7;color:#92400e;">⭐ ไม่ระบุประเภท</span>`;
+        }
         function getRegisteredUser() { return (appData.users || []).find(u => u.userId === currentUser.userId) || null; }
         function getLineAccessToken() {
             try { return (typeof liff !== "undefined" && liff.getAccessToken && liff.getAccessToken()) || ""; } catch (e) { return ""; }
@@ -823,7 +848,7 @@
                 pic: u.pictureUrl || snap.pictureUrl || DEFAULT_AVATAR,
                 name: u.fullName || snap.fullName || u.displayName || "สมาชิก",
                 dept: snap.department || u.department || "",
-                care: snap.careType || u.careType || "OPD"
+                care: snap.careType || u.careType || ""
             };
         }
         let meetingsTableInstance = null;
@@ -832,10 +857,46 @@
         document.addEventListener("DOMContentLoaded", async () => {
             setThaiDateHeader();
             document.getElementById("filterMeetingMonthYear").value = currentYearMonth(); // ค่าเริ่มต้น: เดือน/ปีปัจจุบัน
-            initFullCalendar();
+            try { initFullCalendar(); } catch (e) { console.error("โหลดปฏิทินไม่สำเร็จ", e); } // ปฏิทินโหลดไม่ได้ ระบบส่วนอื่นยังใช้งานได้
             await initLiffApp();
             await loadAllData();
+            handleDeepLink();
         });
+
+        // ลิงก์จากปุ่มในการ์ด Flex: ?meeting=รหัส (เปิดรายงาน + บันทึกผู้อ่าน) / ?task=รหัส (เปิดงานหรือวาระ)
+        function handleDeepLink() {
+            const params = new URLSearchParams(location.search);
+            const state = params.get("liff.state");
+            if (state) {
+                try {
+                    const inner = decodeURIComponent(state);
+                    new URLSearchParams(inner.slice(inner.indexOf("?") + 1)).forEach((v, k) => params.set(k, v));
+                } catch (e) {}
+            }
+            const meetingId = params.get("meeting");
+            const taskId = params.get("task");
+            if (!meetingId && !taskId) return;
+            try { history.replaceState(null, "", location.pathname); } catch (e) {}
+
+            if (meetingId) {
+                const m = (appData.meetings || []).find(x => x.meetingId === meetingId);
+                if (!m) return;
+                switchTab('tab-meetings');
+                document.getElementById("filterMeetingMonthYear").value = String(m.meetingDate || "").slice(0, 7);
+                renderMeetingsDataTable();
+                showMeetingRecordModal(m);   // บันทึกผู้อ่านในตัว
+                if (m.fileUrl) setTimeout(() => openDriveFile(m.fileUrl), 700);
+                return;
+            }
+            const t = (appData.tasks || []).find(x => x.taskId === taskId);
+            if (!t) return;
+            if (t.type === "งาน" && isUserTargeted(t, currentUser)) {
+                switchTab('tab-mytasks');
+                openSubmitWorkModal(t.taskId);
+            } else {
+                viewSubmissionDetails(t.taskId); // วาระประชุม: บันทึกผู้อ่านในตัว
+            }
+        }
 
         function getFirstNameOnly(fullName) {
             if (!fullName) return "สมาชิก";
@@ -901,7 +962,15 @@
                     return;
                 }
                 await liff.init({ liffId: LIFF_ID });
-                if (!liff.isLoggedIn()) { liff.login(); return; }
+                if (!liff.isLoggedIn()) {
+                    // เปิดจากลิงก์ธรรมดาในแอป LINE → ย้ายไปเปิดผ่าน LIFF ซึ่งเข้าสู่ระบบอัตโนมัติ (ไม่ต้องกรอกอีเมล)
+                    if (/\bLine\//i.test(navigator.userAgent) && !liff.isInClient()) {
+                        location.replace("https://liff.line.me/" + LIFF_ID + location.search);
+                        return;
+                    }
+                    liff.login();
+                    return;
+                }
                 const profile = await liff.getProfile();
                 currentUser.userId = profile.userId;
                 currentUser.displayName = profile.displayName;
@@ -921,10 +990,32 @@
             document.getElementById("profilePageAvatar").src = currentUser.pictureUrl;
             document.getElementById("profilePageLineName").innerText = currentUser.displayName;
             document.getElementById("inputFullName").value = currentUser.fullName || currentUser.displayName;
-            if (currentUser.department) document.getElementById("inputDepartment").value = currentUser.department;
-            if (currentUser.careType && (currentUser.careType === "OPD" || currentUser.careType === "IPD")) {
-                document.getElementById("inputCareType").value = currentUser.careType;
-            }
+            refreshProfileDeptOptions();
+            document.getElementById("inputCareType").value = (currentUser.careType === "OPD" || currentUser.careType === "IPD") ? currentUser.careType : "";
+        }
+
+        // หน่วยงานในหน้าโปรไฟล์: รายการพื้นฐาน + หน่วยงานที่มีผู้ลงทะเบียน + เพิ่มชื่อใหม่ได้
+        const BASE_DEPTS = ["หน่วยไตเทียม", "กลุ่มการพยาบาล", "งานควบคุมการติดเชื้อ (IC)", "งานพัฒนาคุณภาพ (CQI/HA)", "ห้องตรวจโรค (OPD)", "หอผู้ป่วยใน (IPD)", "อื่นๆ"];
+        function allDeptChoices(extra) {
+            const set = new Set(BASE_DEPTS.concat(getRegisteredDepts()));
+            if (extra) set.add(extra);
+            return Array.from(set);
+        }
+        function refreshProfileDeptOptions() {
+            const sel = document.getElementById("inputDepartment");
+            const newInput = document.getElementById("inputDepartmentNew");
+            const keepNew = sel.value === "__NEW__";
+            const cur = currentUser.department || "";
+            sel.innerHTML = allDeptChoices(cur).map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('') +
+                `<option value="__NEW__">➕ เพิ่มชื่อหน่วยงานใหม่</option>`;
+            sel.value = keepNew ? "__NEW__" : (cur || BASE_DEPTS[0]);
+            newInput.classList.toggle("d-none", sel.value !== "__NEW__");
+        }
+        function onProfileDeptChange() {
+            const isNew = document.getElementById("inputDepartment").value === "__NEW__";
+            const inp = document.getElementById("inputDepartmentNew");
+            inp.classList.toggle("d-none", !isNew);
+            if (isNew) inp.focus();
         }
 
         function renderCareTypeBadge(careType) {
@@ -943,7 +1034,7 @@
                     if (foundUser) {
                         currentUser.fullName = foundUser.fullName;
                         currentUser.department = foundUser.department;
-                        currentUser.careType = foundUser.careType || "OPD";
+                        currentUser.careType = foundUser.careType || "";
                         if (!currentUser.isLineUser && foundUser.pictureUrl) currentUser.pictureUrl = foundUser.pictureUrl;
                         updateProfileUI();
                     }
@@ -1015,9 +1106,14 @@
         }
 
         async function saveUserProfile(silent = false) {
+            let dept = document.getElementById("inputDepartment").value;
+            if (dept === "__NEW__") {
+                dept = document.getElementById("inputDepartmentNew").value.trim().replace(/\s+/g, " ");
+                if (!dept) { Swal.fire("กรุณาพิมพ์ชื่อหน่วยงาน", "พิมพ์ชื่อหน่วยงานใหม่ในช่องด้านล่างก่อนบันทึก", "warning"); return; }
+            }
             currentUser.fullName = document.getElementById("inputFullName").value.trim() || currentUser.fullName;
-            currentUser.department = document.getElementById("inputDepartment").value;
-            currentUser.careType = document.getElementById("inputCareType").value;
+            currentUser.department = dept;
+            currentUser.careType = document.getElementById("inputCareType").value; // ว่างได้
 
             localStorage.setItem("user_fullName", currentUser.fullName);
             localStorage.setItem("user_department", currentUser.department);
@@ -1070,7 +1166,7 @@
         function isUserTargeted(task, user) {
             if (task.assignee && task.assignee !== "ALL_IN_GROUP") return task.assignee === user.userId;
             const t = parseTargets(task);
-            const userCare = user.careType || "OPD";
+            const userCare = user.careType || "";
             if (t.legacy) {
                 const matchDept = (t.dept === "ALL") || (t.dept === user.department);
                 const matchCare = (t.care === "ALL") || !t.care || (userCare === t.care);
@@ -1085,7 +1181,7 @@
             const t = parseTargets(task);
             if (t.legacy) return t.care === "ALL" || !t.care || t.care === care;
             if (t.all || t.cares.includes(care)) return true;
-            return (appData.users || []).some(u => (u.careType || "OPD") === care && t.depts.includes(u.department));
+            return (appData.users || []).some(u => u.careType === care && t.depts.includes(u.department));
         }
 
         // งานนี้เกี่ยวกับหน่วยงานที่เลือกในตัวกรองหรือไม่
@@ -1093,7 +1189,7 @@
             const t = parseTargets(task);
             if (t.legacy) return t.dept === "ALL" || t.dept === dept;
             if (t.all || t.depts.includes(dept)) return true;
-            return (appData.users || []).some(u => u.department === dept && t.cares.includes(u.careType || "OPD"));
+            return (appData.users || []).some(u => u.department === dept && t.cares.includes(u.careType || ""));
         }
 
         function renderTargetBadges(task) {
@@ -1148,7 +1244,7 @@
                 `<button type="button" class="tchip ${active ? 'active' : ''}" onclick="toggleTarget('${kind}','${enc(val)}')">${label}<span class="tcount">${n}</span></button>`;
             let html = chip("ALL", "", "🌟 ทั้งหมด", users.length, selectedTargets.all);
             html += `<div class="tp-sec">ประเภทบริการ</div>`;
-            html += chip("CARE", "OPD", "🩺 OPD ทั้งหมด", users.filter(u => (u.careType || "OPD") === "OPD").length, selectedTargets.cares.includes("OPD"));
+            html += chip("CARE", "OPD", "🩺 OPD ทั้งหมด", users.filter(u => u.careType === "OPD").length, selectedTargets.cares.includes("OPD"));
             html += chip("CARE", "IPD", "🛏️ IPD ทั้งหมด", users.filter(u => u.careType === "IPD").length, selectedTargets.cares.includes("IPD"));
             html += `<div class="tp-sec">หน่วยงานที่มีผู้ลงทะเบียน</div>`;
             html += depts.length
@@ -1174,10 +1270,10 @@
             }
 
             box.innerHTML = matchedUsers.map(u => `
-                <div class="avatar-chip" title="${u.fullName} (${u.department} | ${u.careType || 'OPD'})">
+                <div class="avatar-chip" title="${esc(u.fullName)} (${esc(u.department)} | ${u.careType || 'ไม่ระบุ'})">
                     <img src="${u.pictureUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}">
                     <span>${getFirstNameOnly(u.fullName)}</span>
-                    <span class="text-[10px] px-1.5 py-0 rounded-pill ${u.careType === 'IPD' ? 'bg-purple-100 text-purple-700' : 'bg-sky-100 text-sky-700'}">${u.careType || 'OPD'}</span>
+                    <span class="text-[10px] px-1.5 py-0 rounded-pill ${u.careType === 'IPD' ? 'bg-purple-100 text-purple-700' : u.careType === 'OPD' ? 'bg-sky-100 text-sky-700' : 'bg-amber-100 text-amber-700'}">${u.careType || '⭐'}</span>
                 </div>
             `).join('');
         }
@@ -1325,6 +1421,7 @@
             // ใช้ข้อมูลล่าสุดจากชีตเสมอ (กันกรณีข้อมูลในปฏิทิน/ตารางค้างเก่า)
             const latest = (appData.meetings || []).find(x => x.meetingId === m.meetingId);
             if (latest) m = latest;
+            markRead(m.meetingId); // บันทึกว่าเปิดอ่านแล้ว
             document.getElementById("statusModalTitle").innerText = "📘 รายละเอียดบันทึกการประชุม";
             const hasFile = /^https?:\/\//i.test(String(m.fileUrl || ""));
 
@@ -1335,6 +1432,7 @@
                     <div class="text-sm text-slate-600">👤 ผู้บันทึก: ${esc(m.createdBy || '-')}</div>
                     ${hasFile ? `<div class="text-sm text-slate-600 mt-1">📎 ไฟล์: ${esc(m.fileName || 'ไฟล์วาระ / รายงานการประชุม')}</div>` : ''}
                 </div>
+                <div class="mb-3">${renderReaderStripFor(m.meetingId)}</div>
                 <div class="d-grid gap-2">
                     ${hasFile
                         ? `<button onclick="openDriveFile(decodeURIComponent('${enc(m.fileUrl)}'))" class="btn btn-success rounded-pill py-2 fw-bold">📂 เปิดไฟล์วาระ / รายงานการประชุม</button>
@@ -1467,7 +1565,7 @@
                                 <div class="fw-bold">${u.fullName}</div>
                                 <div class="d-flex gap-1">
                                     <span class="badge-dept">${u.department}</span>
-                                    ${renderCareTypeBadge(u.careType)}
+                                    ${renderUserCareBadge(u.careType)}
                                 </div>
                             </div>
                         </div>
@@ -1517,9 +1615,9 @@
             if (subs.length === 0) return html + `<div class="text-slate-400 text-sm">ยังไม่มีผู้ส่งงาน</div>`;
 
             const groups = groupSubsByCare(subs);
-            ["OPD", "IPD", "OTHER"].filter(k => groups[k]).forEach(k => {
+            ["OPD", "IPD", "NONE"].filter(k => groups[k]).forEach(k => {
                 const list = groups[k];
-                const tCount = targets.filter(u => careKey(u.careType || "OPD") === k).length;
+                const tCount = targets.filter(u => careKey(u.careType) === k).length;
                 html += `
                     <div class="sub-group">
                         <div class="sub-group-label">${careLabel(k)} <span class="cnt">ส่งแล้ว ${list.length}${tCount ? "/" + tCount : ""} คน</span></div>
@@ -1551,7 +1649,7 @@
                     <img src="${esc(s.pic)}" onerror="this.src='${DEFAULT_AVATAR}'" class="pp-avatar" alt="">
                     <div class="pp-name">${esc(s.name)}</div>
                     <div class="d-flex justify-content-center gap-1 flex-wrap my-2">
-                        <span class="badge-dept">🏥 ${esc(s.dept || '-')}</span>${renderCareTypeBadge(s.care)}
+                        <span class="badge-dept">🏥 ${esc(s.dept || '-')}</span>${renderUserCareBadge(s.care)}
                     </div>
                     ${rankText ? `<div class="pp-rank">${rankText}</div>` : ''}
                     <div class="pp-info text-start">
@@ -1613,8 +1711,10 @@
                 .sort((a, b) => timeOf(a.readAt) - timeOf(b.readAt));
         }
 
-        function renderReaderStrip(task) {
-            const reads = getTaskReads(task.taskId);
+        function renderReaderStrip(task) { return renderReaderStripFor(task.taskId); }
+
+        function renderReaderStripFor(refId) {
+            const reads = getTaskReads(refId);
             let html = `<div class="sub-strip-title text-amber-700">👁️ เปิดอ่านแล้ว ${reads.length} คน</div>`;
             if (reads.length === 0) return html + `<div class="text-slate-400 text-sm">ยังไม่มีผู้เปิดอ่าน</div>`;
             return html + `<div class="sub-av-row">${reads.map(r => `
@@ -1627,16 +1727,19 @@
             const refId = decodeURIComponent(encRefId), userId = decodeURIComponent(encUserId);
             const r = getTaskReads(refId).find(x => x.userId === userId);
             if (!r) return;
-            const task = appData.tasks.find(t => t.taskId === refId) || {};
+            const task = appData.tasks.find(t => t.taskId === refId);
+            const meet = (appData.meetings || []).find(m => m.meetingId === refId);
+            const refLabel = task ? "📅 วาระ" : "📘 รายงานการประชุม";
+            const refTitle = (task || meet || {}).title || "-";
             Swal.fire({
                 html: `
                     <img src="${esc(r.pic)}" onerror="this.src='${DEFAULT_AVATAR}'" class="pp-avatar" alt="">
                     <div class="pp-name">${esc(r.name)}</div>
                     <div class="d-flex justify-content-center gap-1 flex-wrap my-2">
-                        <span class="badge-dept">🏥 ${esc(r.dept || '-')}</span>${renderCareTypeBadge(r.care)}
+                        <span class="badge-dept">🏥 ${esc(r.dept || '-')}</span>${renderUserCareBadge(r.care)}
                     </div>
                     <div class="pp-info text-start">
-                        <div>📅 วาระ: <b>${esc(task.title || '-')}</b></div>
+                        <div>${refLabel}: <b>${esc(refTitle)}</b></div>
                         <div>👁️ เปิดอ่านเมื่อ: ${formatDateTimeThai(r.readAt)}</div>
                     </div>`,
                 confirmButtonText: "ปิด",
@@ -1644,11 +1747,14 @@
             });
         }
 
-        function markTaskRead(task) {
-            if (!currentUser.isLineUser) return; // บันทึกเฉพาะผู้ที่เข้าสู่ระบบด้วย LINE
-            if ((appData.reads || []).some(r => r.refId === task.taskId && r.userId === currentUser.userId)) return;
+        function markTaskRead(task) { markRead(task.taskId); }
+
+        // บันทึกผู้เปิดอ่าน (วาระประชุม หรือ รายงานการประชุม) — ครั้งแรกครั้งเดียวต่อคน
+        function markRead(refId) {
+            if (!currentUser.isLineUser || !refId) return; // บันทึกเฉพาะผู้ที่เข้าสู่ระบบด้วย LINE
+            if ((appData.reads || []).some(r => r.refId === refId && r.userId === currentUser.userId)) return;
             const rec = {
-                refId: task.taskId,
+                refId: refId,
                 userId: currentUser.userId,
                 fullName: currentUser.fullName || currentUser.displayName,
                 department: currentUser.department,
@@ -1659,6 +1765,7 @@
             appData.reads = (appData.reads || []).concat([rec]);
             renderHomeDashboard();
             renderTrackTasks();
+            renderMeetingsDataTable();
             postToGAS({ action: "markRead", read: rec });
         }
 
@@ -1698,6 +1805,7 @@
                         </td>
                         <td>
                             <div class="fw-bold text-slate-800 leading-snug">${esc(m.title || '-')} ${m.fileUrl ? '📎' : ''}</div>
+                            ${renderMiniReaders(m.meetingId)}
                         </td>
                         <td class="text-center">
                             <button onclick="openMeetingDetailFromRow('${safeJson}')" class="scifi-eye-btn" title="ดูรายละเอียด / ลบ" aria-label="ดูรายละเอียด">
@@ -1722,6 +1830,16 @@
                     emptyTable: "ยังไม่มีบันทึกการประชุมในระบบ"
                 }
             });
+        }
+
+        // รูปโปรไฟล์ผู้อ่านแบบเล็ก ใต้หัวข้อรายงานการประชุม (เรียงตามลำดับการอ่าน)
+        function renderMiniReaders(refId) {
+            const reads = getTaskReads(refId);
+            if (!reads.length) return `<div class="mini-readers"><span class="cnt" style="color:#94a3b8;">ยังไม่มีผู้อ่าน</span></div>`;
+            const shown = reads.slice(0, 8);
+            return `<div class="mini-readers">${shown.map(r =>
+                `<img src="${esc(r.pic)}" onerror="this.src='${DEFAULT_AVATAR}'" title="${esc(r.name)}" alt="" onclick="event.stopPropagation(); showReaderPerson('${enc(refId)}','${enc(r.userId)}')">`).join('')}
+                ${reads.length > 8 ? `<span class="more">+${reads.length - 8}</span>` : ''}<span class="cnt">👁️ อ่านแล้ว ${reads.length}</span></div>`;
         }
 
         function openMeetingDetailFromRow(encodedJson) {
@@ -1909,6 +2027,50 @@
             showModal('submissionStatusModal');
         }
 
+        // ส่งการ์ด Flex เข้าห้องแชตในนามผู้ใช้ (ไม่ใช้โควตาข้อความ LINE OA)
+        // เปิดจากในกลุ่ม → ส่งเข้ากลุ่มนั้นทันที / เปิดจากที่อื่น → ให้เลือกกลุ่มที่จะส่ง
+        async function deliverFlex(msg) {
+            if (!msg) return { ok: false, reason: "ไม่มีการ์ดจากระบบหลังบ้าน" };
+            if (typeof liff === "undefined" || !liff.isLoggedIn || !liff.isLoggedIn()) return { ok: false, reason: "ไม่ได้เปิดผ่าน LINE" };
+            try {
+                const ctx = liff.getContext ? liff.getContext() : null;
+                if (liff.isInClient() && ctx && (ctx.type === "group" || ctx.type === "room")) {
+                    try {
+                        await liff.sendMessages([msg]);
+                        return { ok: true, via: "chat" };
+                    } catch (e) { console.warn("sendMessages:", e); /* ไม่มีสิทธิ์ส่งข้อความ → ใช้หน้าเลือกกลุ่มแทน */ }
+                }
+                if (liff.isApiAvailable && liff.isApiAvailable("shareTargetPicker")) {
+                    const r = await liff.shareTargetPicker([msg], { isMultiple: true });
+                    return r ? { ok: true, via: "picker" } : { ok: false, reason: "ยกเลิกการเลือกกลุ่ม" };
+                }
+                return { ok: false, reason: "ยังไม่ได้เปิดสิทธิ์ส่งข้อความใน LIFF" };
+            } catch (e) {
+                return { ok: false, reason: String((e && e.message) || e) };
+            }
+        }
+
+        let lastFlexMsg = null;
+        async function resendLastFlex() {
+            const r = await deliverFlex(lastFlexMsg);
+            if (r.ok) { if (!closeLiffNow()) Swal.fire("ส่งการ์ดแล้ว", "", "success"); }
+            else Swal.fire("ยังส่งการ์ดไม่ได้", r.reason, "warning");
+        }
+
+        function closeLiffNow() {
+            try {
+                if (typeof liff !== "undefined" && liff.isInClient && liff.isInClient()) { liff.closeWindow(); return true; }
+            } catch (e) {}
+            return false;
+        }
+
+        // ปุ่ม ✕ มุมบนขวา
+        function closeApp() {
+            if (closeLiffNow()) return;
+            try { window.close(); } catch (e) {}
+            setTimeout(() => Swal.fire("ปิดหน้าต่างนี้ได้เลย", "หากหน้านี้ไม่ปิดเอง ให้ปิดแท็บของเบราว์เซอร์", "info"), 300);
+        }
+
         // ปิดหน้าต่าง LINE อัตโนมัติ (เฉพาะเมื่อเปิดในแอป LINE)
         function closeLiffSoon(ms) {
             try {
@@ -1924,7 +2086,7 @@
         function renderMemberDirectory() {
             const careFilter = document.getElementById("filterDirCareType").value;
             const container = document.getElementById("memberDirectoryList");
-            const users = (appData.users || []).filter(u => careFilter === "ALL" || (u.careType || "OPD") === careFilter);
+            const users = (appData.users || []).filter(u => careFilter === "ALL" || careKey(u.careType) === careFilter);
             if (users.length === 0) {
                 container.innerHTML = `<div class="text-center text-slate-400 py-3">ยังไม่มีรายชื่อในกลุ่มนี้</div>`;
                 return;
@@ -1932,8 +2094,8 @@
             const sortFn = (a, b) => String(a.department || "").localeCompare(String(b.department || ""), 'th') ||
                                      String(a.fullName || "").localeCompare(String(b.fullName || ""), 'th');
             let html = "";
-            ["OPD", "IPD"].forEach(care => {
-                const list = users.filter(u => (u.careType || "OPD") === care).sort(sortFn);
+            ["NONE", "OPD", "IPD"].forEach(care => {
+                const list = users.filter(u => careKey(u.careType) === care).sort(sortFn);
                 if (!list.length) return;
                 html += `<div class="dir-group-title">${careLabel(care)} <span class="text-slate-400 fw-bold" style="font-size:.8rem;">${list.length} คน</span></div>`;
                 html += list.map(u => {
@@ -1970,7 +2132,7 @@
                     <img src="${esc(u.pictureUrl || DEFAULT_AVATAR)}" onerror="this.src='${DEFAULT_AVATAR}'" class="pp-avatar" alt="">
                     <div class="pp-name">${esc(u.fullName || '-')}</div>
                     <div class="d-flex justify-content-center gap-1 flex-wrap my-2">
-                        <span class="badge-dept">🏥 ${esc(u.department || '-')}</span>${renderCareTypeBadge(u.careType || 'OPD')}
+                        <span class="badge-dept">🏥 ${esc(u.department || '-')}</span>${renderUserCareBadge(u.careType)}
                     </div>
                     <div class="pp-info text-start">
                         <div>💬 ชื่อใน LINE: ${esc(u.displayName || '-')}</div>
@@ -1987,9 +2149,7 @@
         }
 
         function deptOptionsHtml(selected) {
-            const base = Array.from(document.getElementById("inputDepartment").options).map(o => o.value);
-            const all = Array.from(new Set(base.concat(getRegisteredDepts())));
-            return all.map(d => `<option value="${esc(d)}" ${d === selected ? 'selected' : ''}>${esc(d)}</option>`).join('');
+            return allDeptChoices(selected).map(d => `<option value="${esc(d)}" ${d === selected ? 'selected' : ''}>${esc(d)}</option>`).join('');
         }
 
         async function editMember(encId) {
@@ -2003,11 +2163,13 @@
                         <label class="form-label fw-bold mb-1">👩‍⚕️ ชื่อ-นามสกุล</label>
                         <input id="swEditName" class="form-control rounded-4 mb-2" value="${esc(u.fullName || '')}">
                         <label class="form-label fw-bold mb-1">🏥 หน่วยงาน</label>
-                        <select id="swEditDept" class="form-select rounded-4 mb-2">${deptOptionsHtml(u.department)}</select>
+                        <select id="swEditDept" class="form-select rounded-4 mb-1">${deptOptionsHtml(u.department)}</select>
+                        <input id="swEditDeptNew" class="form-control rounded-4 mb-2" placeholder="หรือพิมพ์ชื่อหน่วยงานใหม่">
                         <label class="form-label fw-bold mb-1">🏷️ ประเภทบริการ</label>
                         <select id="swEditCare" class="form-select rounded-4 mb-2">
-                            <option value="OPD" ${(u.careType || 'OPD') === 'OPD' ? 'selected' : ''}>🩺 OPD</option>
+                            <option value="OPD" ${u.careType === 'OPD' ? 'selected' : ''}>🩺 OPD</option>
                             <option value="IPD" ${u.careType === 'IPD' ? 'selected' : ''}>🛏️ IPD</option>
+                            <option value="" ${(u.careType !== 'OPD' && u.careType !== 'IPD') ? 'selected' : ''}>⭐ ไม่ระบุ (หัวหน้าพยาบาล / รองฯ)</option>
                         </select>
                         ${isSelf ? '' : `
                         <label class="form-label fw-bold mb-1">🔒 รหัสผู้ดูแล</label>
@@ -2024,7 +2186,7 @@
                     if (pinEl && !pinEl.value) { Swal.showValidationMessage("กรุณากรอกรหัสผู้ดูแล"); return false; }
                     return {
                         fullName: name,
-                        department: document.getElementById("swEditDept").value,
+                        department: (document.getElementById("swEditDeptNew").value.trim() || document.getElementById("swEditDept").value),
                         careType: document.getElementById("swEditCare").value,
                         pin: pinEl ? pinEl.value : ""
                     };
@@ -2104,7 +2266,7 @@
             avatar.src = pic || DEFAULT_AVATAR;
             document.getElementById("submitterName").innerText = (reg && reg.fullName) || currentUser.fullName || currentUser.displayName || "-";
             document.getElementById("submitterDept").innerText = "🏥 " + ((reg && reg.department) || currentUser.department || "ยังไม่ระบุหน่วยงาน");
-            document.getElementById("submitterCare").innerHTML = renderCareTypeBadge((reg && reg.careType) || currentUser.careType);
+            document.getElementById("submitterCare").innerHTML = renderUserCareBadge(reg ? reg.careType : currentUser.careType);
 
             const warn = document.getElementById("submitterWarn");
             if (!reg) {
@@ -2193,15 +2355,17 @@
             renderTargetPicker();
             updateTargetUsersPreview();
 
-            // วาระการประชุม: ปิดหน้าต่างอัตโนมัติ แล้วการ์ด Flex จะเข้ากลุ่ม LINE
-            const willClose = taskType === "ประชุม" && closeLiffSoon(1600);
+            // ส่งการ์ดเข้ากลุ่มในนามผู้ใช้ (ไม่ใช้โควตา LINE OA); วาระการประชุม → ปิดหน้าต่างทันที
+            lastFlexMsg = res.flex || null;
+            const sent = await deliverFlex(res.flex);
+            if (sent.ok && taskType === "ประชุม" && closeLiffNow()) return;
             Swal.fire({
                 title: "สำเร็จ 🎉",
-                html: "บันทึกลงชีตและปฏิทินแล้ว และส่งการ์ดแจ้งเตือนเข้ากลุ่ม LINE แล้ว" + (willClose ? '<div class="text-sm text-slate-500 mt-2">กำลังปิดหน้าต่าง...</div>' : ''),
+                html: "บันทึกลงชีตและปฏิทินแล้ว" + (sent.ok ? " และส่งการ์ดเข้า LINE แล้ว"
+                    : `<br><span class="text-sm text-slate-500">ยังไม่ได้ส่งการ์ดเข้ากลุ่ม (${esc(sent.reason)})</span><br>
+                       <button onclick="resendLastFlex()" class="btn btn-sm btn-success rounded-pill mt-2 fw-bold">📤 ส่งการ์ดเข้ากลุ่ม LINE</button>`),
                 icon: "success",
-                confirmButtonColor: "#10b981",
-                showConfirmButton: !willClose,
-                timer: willClose ? 1500 : undefined
+                confirmButtonColor: "#10b981"
             });
         }
 
@@ -2354,7 +2518,30 @@
                 return;
             }
 
-            // ตรวจซ้ำจากชีตจริงว่าบันทึกแล้ว
+            // บันทึกสำเร็จ → ส่งการ์ดเข้ากลุ่มในนามผู้ใช้ (ไม่ใช้โควตา) แล้วปิดหน้าต่างทันที
+            if (res.status === "success" && res.flex) {
+                lastFlexMsg = res.flex;
+                Swal.fire({ title: 'กำลังส่งการ์ดเข้ากลุ่ม...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                const sent = await deliverFlex(res.flex);
+                if (sent.ok && closeLiffNow()) return; // จบเลย
+                hideModal('addMeetingModal');
+                document.getElementById("meetTitle").value = "";
+                document.getElementById("meetFile").value = "";
+                document.getElementById("filterMeetingMonthYear").value = meetDate.slice(0, 7);
+                await loadAllData();
+                switchTab('tab-meetings');
+                Swal.fire({
+                    title: "บันทึกสำเร็จ 🎉",
+                    html: sent.ok ? "ส่งการ์ดเข้า LINE แล้ว"
+                        : `บันทึกลงตารางแล้ว แต่ยังไม่ได้ส่งการ์ดเข้ากลุ่ม<br><span class="text-sm text-slate-500">(${esc(sent.reason)})</span><br>
+                           <button onclick="resendLastFlex()" class="btn btn-sm btn-success rounded-pill mt-2 fw-bold">📤 ส่งการ์ดเข้ากลุ่ม LINE</button>`,
+                    icon: "success",
+                    confirmButtonColor: "#10b981"
+                });
+                return;
+            }
+
+            // กรณีอ่านคำตอบไม่ได้: ตรวจซ้ำจากชีตจริงว่าบันทึกแล้ว
             document.getElementById("filterMeetingMonthYear").value = meetDate.slice(0, 7);
             await loadAllData();
             const saved = (appData.meetings || []).find(m => (res.meetingId && m.meetingId === res.meetingId) ||
@@ -2363,24 +2550,11 @@
                 Swal.fire("ยังไม่พบข้อมูลการประชุม", "ระบบยังไม่ได้รับข้อมูล กรุณาลองบันทึกใหม่อีกครั้ง หากยังไม่ได้ให้แจ้งผู้ดูแลระบบ", "error");
                 return;
             }
-
             hideModal('addMeetingModal');
             document.getElementById("meetTitle").value = "";
             document.getElementById("meetFile").value = "";
             switchTab('tab-meetings');
-
-            // ปิดหน้าต่างอัตโนมัติ แล้วการ์ด Flex จะเข้ากลุ่ม LINE
-            const willClose = closeLiffSoon(1600);
-            Swal.fire({
-                title: "บันทึกสำเร็จ 🎉",
-                html: `บันทึกลงตารางและส่งการ์ด Flex เข้ากลุ่ม LINE แล้ว
-                    ${willClose ? '<div class="text-sm text-slate-500 mt-2">กำลังปิดหน้าต่าง...</div>'
-                        : (saved.fileUrl ? `<br><button onclick="openDriveFile(decodeURIComponent('${enc(saved.fileUrl)}'))" class="btn btn-sm btn-outline-success rounded-pill mt-2 fw-bold">📎 เปิดดูไฟล์รายงาน</button>` : '')}`,
-                icon: "success",
-                confirmButtonColor: "#10b981",
-                showConfirmButton: !willClose,
-                timer: willClose ? 1500 : undefined
-            });
+            Swal.fire({ title: "บันทึกสำเร็จ 🎉", html: "บันทึกลงตารางแล้ว (ไม่ได้รับการ์ดจากระบบ จึงยังไม่ได้ส่งเข้ากลุ่ม)", icon: "success", confirmButtonColor: "#10b981" });
         }
 
         function switchTab(tabId) {
