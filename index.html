@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ระบบแจ้งเตือนงาน & ปฏิทินประชุม (LINE OA)</title>
+    <script>
+        // เปิดจากปุ่ม "เปิดอ่าน" ในการ์ด LINE: ซ่อนหน้าระบบ แสดงเฉพาะหน้ากำลังเปิดไฟล์
+        (function () {
+            try {
+                var q = location.search, st = new URLSearchParams(q).get("liff.state") || "";
+                try { st = decodeURIComponent(st); } catch (e) {}
+                if (/[?&](read|meeting)=/.test(q) || /[?&](read|meeting)=/.test(st)) document.documentElement.classList.add("fast-open");
+            } catch (e) {}
+        })();
+    </script>
+    <style>
+        html:not(.fast-open) #fastOpen { display: none !important; }
+        html.fast-open body > *:not(#fastOpen) { display: none !important; }
+    </style>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -382,9 +396,48 @@
         /* กล่องข้อมูลผู้ส่งในหน้าต่างส่งงาน */
         .submitter-card { background: rgba(239, 246, 255, 0.9); border: 1px solid #bfdbfe; border-radius: 20px; padding: 10px 12px; }
         .submitter-card img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.45); flex-shrink: 0; background: #fff; }
+
+        /* หน้ากำลังเปิดไฟล์ (กดเปิดอ่านจากการ์ด LINE) โทนน้ำเงินกรมท่า-ทอง แบบเดียวกับการ์ด */
+        #fastOpen {
+            position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 24px;
+            background: radial-gradient(circle at 50% 30%, #18265F 0%, #0F1B4C 70%);
+        }
+        #fastOpen .fo-card {
+            width: 100%; max-width: 360px; text-align: center; color: #FAF5E8; padding: 28px 22px 22px;
+            border: 2px solid #D4AF37; border-radius: 18px; box-shadow: inset 0 0 0 4px #0F1B4C, inset 0 0 0 5px #9C7A2E, 0 18px 40px rgba(0,0,0,0.35);
+        }
+        #fastOpen .fo-icon { font-size: 2.6rem; line-height: 1; animation: foFloat 1.6s ease-in-out infinite; }
+        #fastOpen .fo-en { margin-top: 12px; color: #EBD28C; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.32em; }
+        #fastOpen .fo-title { margin-top: 8px; font-weight: 700; font-size: 1.05rem; line-height: 1.45; word-break: break-word; }
+        #fastOpen .fo-spin {
+            width: 38px; height: 38px; margin: 18px auto 12px; border-radius: 50%;
+            border: 3px solid rgba(212,175,55,0.25); border-top-color: #D4AF37; animation: foSpin 0.9s linear infinite;
+        }
+        #fastOpen .fo-note { font-size: 0.86rem; color: #F3EBD6; min-height: 1.3em; }
+        #fastOpen .fo-btn {
+            display: inline-block; margin-top: 16px; padding: 10px 20px; border-radius: 999px; font-weight: 700; text-decoration: none;
+            color: #0F1B4C; background: linear-gradient(135deg, #EBD28C, #D4AF37);
+        }
+        #fastOpen .fo-link { display: block; margin-top: 12px; font-size: 0.84rem; color: #EBD28C; text-decoration: underline; background: none; border: 0; width: 100%; }
+        #fastOpen.fo-done .fo-spin { display: none; }
+        @keyframes foSpin { to { transform: rotate(360deg); } }
+        @keyframes foFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     </style>
 </head>
 <body>
+
+    <!-- หน้ากำลังเปิดไฟล์ (แสดงเฉพาะเมื่อกดเปิดอ่านจากการ์ด LINE) -->
+    <div id="fastOpen" role="status" aria-live="polite">
+        <div class="fo-card">
+            <div class="fo-icon">📖</div>
+            <div class="fo-en">MEETING REPORT</div>
+            <div class="fo-title" id="foTitle">กำลังเปิดรายงานการประชุม…</div>
+            <div class="fo-spin"></div>
+            <div class="fo-note" id="foNote">กำลังยืนยันตัวตนกับ LINE…</div>
+            <a id="foOpenBtn" class="fo-btn d-none" href="#" rel="noopener">📖 เปิดไฟล์รายงาน</a>
+            <button type="button" id="foAppBtn" class="fo-link d-none" onclick="leaveFastOpen()">🗓️ เข้าสู่ระบบปฏิทินงาน</button>
+        </div>
+    </div>
 
     <!-- HEADER -->
     <div class="app-header">
@@ -855,6 +908,11 @@
         let calendarInstance = null;
 
         document.addEventListener("DOMContentLoaded", async () => {
+            // กดเปิดอ่านจากการ์ด LINE: บันทึกผู้อ่านแล้วเปิดไฟล์ทันที ไม่ต้องโหลดทั้งระบบ
+            if (document.documentElement.classList.contains("fast-open")) {
+                if (await fastOpenRead(getDeepParams())) return;
+                document.documentElement.classList.remove("fast-open"); // ไม่พบไฟล์ → เปิดรายละเอียดในระบบแทน
+            }
             setThaiDateHeader();
             document.getElementById("filterMeetingMonthYear").value = currentYearMonth(); // ค่าเริ่มต้น: เดือน/ปีปัจจุบัน
             try { initFullCalendar(); } catch (e) { console.error("โหลดปฏิทินไม่สำเร็จ", e); } // ปฏิทินโหลดไม่ได้ ระบบส่วนอื่นยังใช้งานได้
@@ -863,8 +921,8 @@
             handleDeepLink();
         });
 
-        // ลิงก์จากปุ่มในการ์ด Flex: ?meeting=รหัส (เปิดรายงาน + บันทึกผู้อ่าน) / ?task=รหัส (เปิดงานหรือวาระ)
-        function handleDeepLink() {
+        // ค่าที่ส่งมากับลิงก์ (รวมค่าที่ LIFF ส่งต่อผ่าน liff.state)
+        function getDeepParams() {
             const params = new URLSearchParams(location.search);
             const state = params.get("liff.state");
             if (state) {
@@ -873,8 +931,98 @@
                     new URLSearchParams(inner.slice(inner.indexOf("?") + 1)).forEach((v, k) => params.set(k, v));
                 } catch (e) {}
             }
-            const meetingId = params.get("meeting");
-            const taskId = params.get("task");
+            return params;
+        }
+
+        let liffInitPromise = null;
+        function ensureLiffInit() {
+            if (!liffInitPromise) liffInitPromise = liff.init({ liffId: LIFF_ID });
+            return liffInitPromise;
+        }
+        const sleep = ms => new Promise(r => setTimeout(r, ms));
+        function foSet(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+        function leaveFastOpen() { location.replace(location.pathname); } // เข้าสู่หน้าระบบตามปกติ
+
+        // บันทึกผู้อ่านทันที (keepalive: แม้หน้าเปลี่ยนไปเปิดไฟล์แล้ว คำขอก็ยังส่งจนเสร็จ)
+        async function sendReadNow(rec) {
+            try {
+                const r = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST", redirect: "follow", keepalive: true,
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "markRead", read: rec })
+                });
+                return JSON.parse(await r.text());
+            } catch (e) {
+                return null;
+            }
+        }
+
+        /**
+         * ปุ่ม "เปิดอ่าน" ในการ์ด: ?read=รหัส&f=รหัสไฟล์ (การ์ดเก่า: ?meeting=รหัส)
+         * ยืนยันตัวตนกับ LINE → บันทึกผู้อ่าน → เปิดไฟล์ทันที  คืนค่า false เมื่อไม่พบไฟล์ (ให้เปิดในระบบแทน)
+         */
+        async function fastOpenRead(deep) {
+            const refId = deep.get("read") || deep.get("meeting");
+            if (!refId) return false;
+            const fid = String(deep.get("f") || "").replace(/[^-\w]/g, "");
+            let fileUrl = fid ? `https://drive.google.com/file/d/${fid}/view` : "";
+            const showBackup = () => {
+                document.getElementById("foAppBtn").classList.remove("d-none");
+                if (fileUrl) {
+                    const b = document.getElementById("foOpenBtn");
+                    b.href = fileUrl;
+                    b.classList.remove("d-none");
+                }
+            };
+            const backupTimer = setTimeout(showBackup, 6000); // รอนานผิดปกติ: ให้กดเปิดเองได้
+
+            let profile = null;
+            try {
+                await ensureLiffInit();
+                // ลิงก์ LIFF ส่งค่าผ่าน liff.state: รอให้ LIFF พาไปหน้าที่มีค่าครบก่อน (หน้านี้จะถูกโหลดใหม่)
+                if (new URLSearchParams(location.search).has("liff.state")) await sleep(1500);
+                if (!liff.isLoggedIn()) {
+                    if (/\bLine\//i.test(navigator.userAgent) && !liff.isInClient()) {
+                        location.replace("https://liff.line.me/" + LIFF_ID + location.search); // เปิดผ่าน LIFF: ไม่ต้องกรอกอีเมล
+                        return true;
+                    }
+                    liff.login();
+                    return true;
+                }
+                profile = await liff.getProfile();
+            } catch (e) {
+                console.warn("ยืนยันตัวตนกับ LINE ไม่สำเร็จ", e);
+            }
+
+            foSet("foNote", "กำลังบันทึกการเปิดอ่าน…");
+            const rec = {
+                refId: refId,
+                userId: profile ? profile.userId : currentUser.userId,
+                fullName: profile ? profile.displayName : "",
+                pictureUrl: profile ? (profile.pictureUrl || "") : "",
+                readAt: new Date().toISOString()
+            };
+            const res = await Promise.race([sendReadNow(rec), sleep(fileUrl ? 4000 : 12000).then(() => null)]);
+            clearTimeout(backupTimer);
+            if (res && res.fileUrl) fileUrl = driveViewUrl(res.fileUrl);
+            if (res && res.title) foSet("foTitle", res.title);
+            if (!fileUrl) return false;
+
+            const saved = !!(profile && res && res.status === "success" && !res.skipped);
+            document.getElementById("fastOpen").classList.add("fo-done");
+            foSet("foNote", saved ? "✅ บันทึกว่าคุณเปิดอ่านแล้ว กำลังเปิดไฟล์…" : "กำลังเปิดไฟล์…");
+            showBackup();
+            await sleep(400);
+            location.replace(fileUrl);
+            return true;
+        }
+
+        // ลิงก์จากปุ่มในการ์ด Flex: ?meeting=รหัส / ?read=รหัส (เปิดรายงาน + บันทึกผู้อ่าน) / ?task=รหัส (เปิดงานหรือวาระ)
+        function handleDeepLink() {
+            const params = getDeepParams();
+            const readId = params.get("read");
+            const meetingId = params.get("meeting") || ((appData.meetings || []).some(x => x.meetingId === readId) ? readId : "");
+            const taskId = params.get("task") || (!meetingId && readId ? readId : "");
             if (!meetingId && !taskId) return;
             try { history.replaceState(null, "", location.pathname); } catch (e) {}
 
@@ -961,7 +1109,7 @@
                     updateProfileUI();
                     return;
                 }
-                await liff.init({ liffId: LIFF_ID });
+                await ensureLiffInit();
                 if (!liff.isLoggedIn()) {
                     // เปิดจากลิงก์ธรรมดาในแอป LINE → ย้ายไปเปิดผ่าน LIFF ซึ่งเข้าสู่ระบบอัตโนมัติ (ไม่ต้องกรอกอีเมล)
                     if (/\bLine\//i.test(navigator.userAgent) && !liff.isInClient()) {
